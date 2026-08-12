@@ -23,11 +23,14 @@ end;
 $$;
 
 -- Un usuario recién registrado se suma a un criadero existente con el código.
--- Entra como petisero; el dueño le puede cambiar el rol después.
+-- Si el criadero todavía no tiene miembros, queda como dueño; si no, entra
+-- como petisero y el dueño le cambia el rol después.
 create or replace function unirse_a_organizacion(p_codigo text, p_mi_nombre text) returns uuid
 language plpgsql volatile security definer set search_path = public as
 $$
-declare v_org uuid;
+declare
+  v_org uuid;
+  v_rol text;
 begin
   if exists (select 1 from perfiles where user_id = auth.uid()) then
     raise exception 'Ya pertenecés a una organización.';
@@ -36,8 +39,10 @@ begin
   if v_org is null then
     raise exception 'Ese código de invitación no existe.';
   end if;
+  select case when exists (select 1 from perfiles where organizacion_id = v_org)
+              then 'petisero' else 'dueno' end into v_rol;
   insert into perfiles (user_id, organizacion_id, rol, nombre)
-    values (auth.uid(), v_org, 'petisero', p_mi_nombre);
+    values (auth.uid(), v_org, v_rol, p_mi_nombre);
   return v_org;
 end;
 $$;
