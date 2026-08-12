@@ -1,0 +1,1116 @@
+<title>Sistema de gestión equina — Propuesta para Matías</title>
+
+<style>
+  :root {
+    --ground: #EFF1EC;
+    --surface: #FAFBF7;
+    --surface-2: #E7EBE4;
+    --ink: #16211B;
+    --ink-soft: #3A4A41;
+    --muted: #5F6E64;
+    --rule: #D6DDD2;
+    --rule-soft: #E3E8DF;
+    --accent: #1E5A3F;
+    --accent-soft: #DCE8DF;
+    --brass: #8A6C22;
+    --brass-soft: #EFE6CE;
+    --ok: #2F7A4E;
+    --ok-bg: #DDEDE1;
+    --warn: #9A6A10;
+    --warn-bg: #F3E7C9;
+    --crit: #A03828;
+    --crit-bg: #F4DFD9;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Avenir Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 40rem;
+    --wide: 62rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0F1512;
+      --surface: #161D19;
+      --surface-2: #1D2621;
+      --ink: #E7ECE5;
+      --ink-soft: #C3CCC4;
+      --muted: #8E9C92;
+      --rule: #26312B;
+      --rule-soft: #1F2823;
+      --accent: #74C295;
+      --accent-soft: #1B2E24;
+      --brass: #D6B064;
+      --brass-soft: #2A2418;
+      --ok: #6FBF8E;
+      --ok-bg: #16291E;
+      --warn: #D9AC4E;
+      --warn-bg: #2B2413;
+      --crit: #E08670;
+      --crit-bg: #2E1B16;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0F1512;
+    --surface: #161D19;
+    --surface-2: #1D2621;
+    --ink: #E7ECE5;
+    --ink-soft: #C3CCC4;
+    --muted: #8E9C92;
+    --rule: #26312B;
+    --rule-soft: #1F2823;
+    --accent: #74C295;
+    --accent-soft: #1B2E24;
+    --brass: #D6B064;
+    --brass-soft: #2A2418;
+    --ok: #6FBF8E;
+    --ok-bg: #16291E;
+    --warn: #D9AC4E;
+    --warn-bg: #2B2413;
+    --crit: #E08670;
+    --crit-bg: #2E1B16;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #EFF1EC;
+    --surface: #FAFBF7;
+    --surface-2: #E7EBE4;
+    --ink: #16211B;
+    --ink-soft: #3A4A41;
+    --muted: #5F6E64;
+    --rule: #D6DDD2;
+    --rule-soft: #E3E8DF;
+    --accent: #1E5A3F;
+    --accent-soft: #DCE8DF;
+    --brass: #8A6C22;
+    --brass-soft: #EFE6CE;
+    --ok: #2F7A4E;
+    --ok-bg: #DDEDE1;
+    --warn: #9A6A10;
+    --warn-bg: #F3E7C9;
+    --crit: #A03828;
+    --crit-bg: #F4DFD9;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 3.5rem) clamp(1.1rem, 4vw, 2.5rem) 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+  }
+
+  .col {
+    max-width: var(--measure);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  p { margin: 0; }
+  ul, ol { margin: 0; padding-left: 1.15rem; }
+  li { margin: 0.3rem 0; }
+  strong { font-weight: 650; color: var(--ink); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ---------- portada ---------- */
+
+  .cover {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .cover h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.3rem, 6vw, 3.9rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .cover h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .cover .lead {
+    max-width: var(--measure);
+    font-size: 1.12rem;
+    color: var(--ink-soft);
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---------- secciones ---------- */
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .sec-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .sec-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.4vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    margin: 0;
+  }
+
+  /* ---------- preguntas ---------- */
+
+  .questions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+
+  .questions li {
+    margin: 0;
+    padding: 0.95rem 1.1rem;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    font-family: var(--serif);
+    font-size: 1.02rem;
+    line-height: 1.35;
+    background: var(--surface);
+  }
+
+  /* ---------- módulos ---------- */
+
+  .modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16.5rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .module {
+    background: var(--surface);
+    padding: 1.25rem 1.25rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .module .eyebrow { color: var(--accent); }
+
+  .module p { font-size: 0.94rem; color: var(--ink-soft); }
+
+  .module ul {
+    font-size: 0.9rem;
+    color: var(--muted);
+    padding-left: 1rem;
+    margin-top: 0.15rem;
+  }
+
+  /* ---------- tablas ---------- */
+
+  .scroller {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 34rem;
+    font-size: 0.92rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.62rem 0.9rem;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  td.field {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  td.num, th.num {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .group-row td {
+    background: var(--accent-soft);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ---------- pills ---------- */
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.16rem 0.45rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .pill.crit { background: var(--crit-bg); color: var(--crit); }
+  .pill.neutral { background: var(--surface-2); color: var(--muted); }
+
+  /* ---------- tablero ---------- */
+
+  .board {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+  }
+
+  .board-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0.95rem;
+    background: var(--ink);
+    color: var(--ground);
+  }
+
+  .board-bar .t {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .board-bar .d {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tile {
+    background: var(--surface);
+    padding: 0.9rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tile .k {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .tile .v {
+    font-family: var(--serif);
+    font-size: 1.95rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .tile .s {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .tile.alert .v { color: var(--crit); }
+  .tile.money .v { color: var(--brass); }
+
+  .bar {
+    height: 4px;
+    background: var(--surface-2);
+    margin-top: 0.45rem;
+    overflow: hidden;
+  }
+
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .bar.warn span { background: var(--warn); }
+
+  .board .scroller { border: 0; }
+  .board table { min-width: 44rem; }
+
+  .note {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ---------- fases ---------- */
+
+  .phases {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phase {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0 1.2rem;
+    padding: 1.05rem 0;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+
+  .phase:last-child { border-bottom: 1px solid var(--rule); }
+
+  .phase .n {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brass);
+    padding-top: 0.2rem;
+  }
+
+  .phase .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-width: var(--measure);
+  }
+
+  .phase p { font-size: 0.95rem; color: var(--ink-soft); }
+
+  .phase .out {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* ---------- reglas ---------- */
+
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .rule-card {
+    background: var(--surface);
+    padding: 1.1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .rule-card h3 { font-size: 0.95rem; }
+  .rule-card p { font-size: 0.88rem; color: var(--muted); }
+
+  /* ---------- cierre ---------- */
+
+  .closing {
+    background: var(--ink);
+    color: var(--ground);
+    padding: clamp(1.5rem, 4vw, 2.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .closing h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.2vw, 2rem);
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .closing p, .closing li { color: var(--surface-2); }
+  .closing .eyebrow { color: var(--brass); }
+  .closing ol { max-width: var(--measure); }
+
+  .callout {
+    border-left: 3px solid var(--brass);
+    background: var(--brass-soft);
+    padding: 0.85rem 1.1rem;
+    max-width: var(--measure);
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+
+  a { color: var(--accent); }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
+
+<div class="page">
+
+  <header class="cover">
+    <p class="eyebrow">Propuesta de organización · Establo de polo</p>
+    <h1>Cada caballo, con <em>nombre, lugar, historia y número</em>.</h1>
+    <p class="lead">
+      Una organización de más de cien caballos mueve, hoy, la misma información que una empresa mediana:
+      dónde está cada animal, qué se le hizo, quién lo atiende, cuánto costó y cuánto vale. Esta propuesta
+      arma un sistema único para que esa información deje de vivir en cuadernos, WhatsApp y cabezas, y pase
+      a estar en un solo lugar, actualizada y consultable desde el celular.
+    </p>
+    <div class="meta-row">
+      <span>Preparado para Matías</span>
+      <span>Julio 2026</span>
+      <span>Alcance: 100+ equinos</span>
+      <span>Implementación estimada: 10 semanas</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">El punto de partida</p>
+      <h2>El problema no es la falta de datos, es que están repartidos</h2>
+    </div>
+    <div class="col">
+      <p>
+        Con cien caballos, la información existe: el veterinario la tiene en sus recetas, el herrero en su
+        agenda, los petiseros en la memoria, la administración en un Excel, y las fotos de estudios en el
+        teléfono. El problema aparece cuando hay que cruzarlas.
+      </p>
+      <ul>
+        <li><strong>No hay una lista única y confiable.</strong> Nadie puede decir en 30 segundos cuántos caballos hay hoy, dónde está cada uno y en qué estado.</li>
+        <li><strong>La historia sanitaria se pierde.</strong> Una lesión de hace dos años, quién la trató y cómo respondió al tratamiento son datos que rara vez sobreviven al cambio de veterinario o de petisero.</li>
+        <li><strong>El costo real por caballo es invisible.</strong> Se conoce el gasto total del mes, pero no cuánto cuesta cada animal ni cuáles están costando plata sin jugar.</li>
+        <li><strong>Las decisiones se toman de memoria.</strong> Qué vender, qué mandar a la temporada, qué yegua conviene dar servicio: hoy se resuelve por percepción, no por historial.</li>
+        <li><strong>Todo depende de personas.</strong> Si se va el capataz o el veterinario, se va parte del archivo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">El objetivo</p>
+      <h2>Diez preguntas que el sistema tiene que contestar solo</h2>
+    </div>
+    <p class="col">
+      Esta es la prueba de fuego de la propuesta. Si el sistema no contesta esto en segundos, no sirve.
+    </p>
+    <ul class="questions">
+      <li>¿Dónde está cada caballo hoy, y desde cuándo?</li>
+      <li>¿Cuánto me costó esta yegua y cuánto llevo gastado en ella?</li>
+      <li>¿Qué caballos tienen la vacunación o el Coggins vencidos?</li>
+      <li>¿Qué se le hizo a este caballo en los últimos dos años?</li>
+      <li>¿Cuántos caballos están en recuperación y hasta cuándo?</li>
+      <li>¿Qué caballos vienen sin jugar y siguen generando costo?</li>
+      <li>¿Cuánto vale hoy el conjunto y cuánto está asegurado?</li>
+      <li>¿Qué yeguas están preñadas y cuándo paren?</li>
+      <li>¿A quién le herré este mes y a quién le toca la semana que viene?</li>
+      <li>¿Cerramos el mes por encima o por debajo del presupuesto, y por qué?</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">La arquitectura</p>
+      <h2>Seis módulos, una sola base de caballos</h2>
+    </div>
+    <p class="col">
+      Todo cuelga de una única ficha por animal. Los módulos no son planillas separadas: son distintas
+      vistas de la misma base, así un dato se carga una sola vez y aparece donde haga falta.
+    </p>
+    <div class="modules">
+      <div class="module">
+        <p class="eyebrow">Identidad</p>
+        <h3>Ficha única del caballo</h3>
+        <p>El documento de identidad del animal. Todo lo que no cambia, más su estado actual.</p>
+        <ul>
+          <li>Datos, papeles y microchip</li>
+          <li>Pedigrí y origen</li>
+          <li>Fotos y video de juego</li>
+          <li>Estado actual en una palabra</li>
+        </ul>
+      </div>
+      <div class="module">
+        <p class="eyebrow">Logística</p>
+        <h3>Ubicación y movimientos</h3>
+        <p>Dónde está y cómo llegó ahí. Cada traslado queda registrado, no se pisa el dato anterior.</p>
+        <ul>
+          <li>Campo, cancha, haras, clínica</li>
+          <li>Viajes y temporadas</li>
+          <li>Prestados y alquilados</li>
+          <li>Petisero responsable</li>
+        </ul>
+      </div>
+      <div class="module">
+        <p class="eyebrow">Sanidad</p>
+        <h3>Veterinaria y herrería</h3>
+        <p>La historia clínica completa, con los estudios adjuntos y los vencimientos que avisan solos.</p>
+        <ul>
+          <li>Vacunas, Coggins, desparasitación</li>
+          <li>Lesiones, tratamientos y altas</li>
+          <li>Radiografías y ecografías</li>
+          <li>Herrajes y odontología</li>
+        </ul>
+      </div>
+      <div class="module">
+        <p class="eyebrow">Deportivo</p>
+        <h3>Entrenamiento y juego</h3>
+        <p>Qué hace cada caballo, quién lo juega y cómo rinde. Lo que hoy solo está en la percepción.</p>
+        <ul>
+          <li>Etapa: potro, doma, hecho, retirado</li>
+          <li>Torneos y chukkers jugados</li>
+          <li>Jinete asignado</li>
+          <li>Observaciones de rendimiento</li>
+        </ul>
+      </div>
+      <div class="module">
+        <p class="eyebrow">Genética</p>
+        <h3>Reproducción y crianza</h3>
+        <p>El pie de yeguas como activo: qué produce cada línea y cuánto tarda en jugar.</p>
+        <ul>
+          <li>Servicios, embriones y receptoras</li>
+          <li>Preñeces y fechas de parto</li>
+          <li>Producto por yegua madre</li>
+          <li>Clones y semen conservado</li>
+        </ul>
+      </div>
+      <div class="module">
+        <p class="eyebrow">Finanzas</p>
+        <h3>Costos, valor y resultado</h3>
+        <p>El módulo que convierte al establo en un negocio medible, caballo por caballo.</p>
+        <ul>
+          <li>Costo de adquisición o crianza</li>
+          <li>Gasto mensual por animal</li>
+          <li>Valuación y seguro</li>
+          <li>Ventas, alquileres y premios</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">El corazón del sistema</p>
+      <h2>Qué lleva la ficha de cada yegua</h2>
+    </div>
+    <p class="col">
+      Este es el listado de campos concreto. La regla es que cada dato tenga un único lugar y un único
+      responsable de cargarlo. Los campos marcados como <strong>histórico</strong> nunca se sobrescriben:
+      se agrega un registro nuevo y el anterior queda.
+    </p>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Campo</th>
+            <th scope="col">Qué guarda</th>
+            <th scope="col">Quién lo carga</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><td colspan="3">Identidad — se carga una vez</td></tr>
+          <tr><td class="field">nombre</td><td>Nombre de juego y sobrenombre de caballeriza</td><td>Administración</td></tr>
+          <tr><td class="field">microchip / nº</td><td>Microchip, tatuaje y número interno del establo</td><td>Administración</td></tr>
+          <tr><td class="field">papeles</td><td>Registro de criadores, pasaporte, certificados. PDF adjunto</td><td>Administración</td></tr>
+          <tr><td class="field">nacimiento</td><td>Fecha, criador y establecimiento de origen</td><td>Administración</td></tr>
+          <tr><td class="field">pelaje / señas</td><td>Pelaje, marcas particulares y foto de frente y perfil</td><td>Petisero</td></tr>
+          <tr><td class="field">padre / madre</td><td>Pedigrí, con enlace a la yegua madre si es de cría propia</td><td>Administración</td></tr>
+          <tr><td class="field">origen</td><td>Comprada, criada, embrión, clon o recibida</td><td>Administración</td></tr>
+
+          <tr class="group-row"><td colspan="3">Estado y ubicación — histórico</td></tr>
+          <tr><td class="field">estado</td><td>En juego, en preparación, recuperación, preñada, retirada, vendida</td><td>Capataz</td></tr>
+          <tr><td class="field">ubicación</td><td>Establecimiento o destino actual, con fecha de llegada</td><td>Capataz</td></tr>
+          <tr><td class="field">movimientos</td><td>Cada traslado: origen, destino, fecha, motivo, transporte</td><td>Capataz</td></tr>
+          <tr><td class="field">responsable</td><td>Petisero a cargo y jinete asignado</td><td>Capataz</td></tr>
+          <tr><td class="field">tenencia</td><td>Propio, en sociedad, prestado o alquilado a un tercero</td><td>Administración</td></tr>
+
+          <tr class="group-row"><td colspan="3">Sanidad — histórico</td></tr>
+          <tr><td class="field">vacunas</td><td>Tipo, fecha, próxima dosis. Genera alerta al vencer</td><td>Veterinario</td></tr>
+          <tr><td class="field">coggins</td><td>Fecha del análisis, resultado y vencimiento para viajar</td><td>Veterinario</td></tr>
+          <tr><td class="field">desparasitación</td><td>Producto, fecha y próxima aplicación</td><td>Veterinario</td></tr>
+          <tr><td class="field">lesiones</td><td>Diagnóstico, fecha, tratamiento, días de reposo, fecha de alta</td><td>Veterinario</td></tr>
+          <tr><td class="field">estudios</td><td>Radiografías, ecografías e informes adjuntos al caballo</td><td>Veterinario</td></tr>
+          <tr><td class="field">herrería</td><td>Fecha, herrero, tipo de herraje y próxima fecha estimada</td><td>Capataz</td></tr>
+          <tr><td class="field">odontología</td><td>Última revisión y observaciones</td><td>Veterinario</td></tr>
+
+          <tr class="group-row"><td colspan="3">Deportivo y reproductivo</td></tr>
+          <tr><td class="field">etapa</td><td>Potro, en doma, primer año, hecha, veterana, retirada</td><td>Capataz</td></tr>
+          <tr><td class="field">partidos</td><td>Torneo, fecha, chukkers jugados y jinete</td><td>Capataz</td></tr>
+          <tr><td class="field">rendimiento</td><td>Nota y observaciones después de cada temporada</td><td>Matías</td></tr>
+          <tr><td class="field">reproducción</td><td>Servicios, embriones, receptora, preñez y fecha de parto</td><td>Veterinario</td></tr>
+
+          <tr class="group-row"><td colspan="3">Económico</td></tr>
+          <tr><td class="field">costo adquisición</td><td>Precio y fecha de compra, o costo de crianza acumulado</td><td>Administración</td></tr>
+          <tr><td class="field">gastos</td><td>Todo gasto imputado al caballo, por rubro y fecha</td><td>Administración</td></tr>
+          <tr><td class="field">valuación</td><td>Valor estimado actual y fecha de la última tasación</td><td>Matías</td></tr>
+          <tr><td class="field">seguro</td><td>Compañía, suma asegurada, prima y vencimiento de póliza</td><td>Administración</td></tr>
+          <tr><td class="field">ingresos</td><td>Venta, alquiler de temporada, premios, venta de embriones</td><td>Administración</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Cómo se ve</p>
+      <h2>El tablero de todos los días</h2>
+    </div>
+    <p class="col">
+      La pantalla que Matías abre a la mañana. Arriba, el estado general del establo; abajo, la lista de
+      caballos filtrable por estado, ubicación, petisero o alerta. Los números son de ejemplo.
+    </p>
+
+    <div class="board">
+      <div class="board-bar">
+        <span class="t">Tablero general</span>
+        <span class="d">Lunes 27 · 07:40</span>
+      </div>
+
+      <div class="tiles">
+        <div class="tile">
+          <span class="k">Caballos activos</span>
+          <span class="v">114</span>
+          <span class="s">78 en juego · 21 en preparación · 15 vientres</span>
+        </div>
+        <div class="tile alert">
+          <span class="k">Requieren atención</span>
+          <span class="v">9</span>
+          <span class="s">6 vacunas vencidas · 3 Coggins por vencer</span>
+        </div>
+        <div class="tile">
+          <span class="k">En recuperación</span>
+          <span class="v">7</span>
+          <span class="s">Reposo promedio restante: 24 días</span>
+        </div>
+        <div class="tile money">
+          <span class="k">Costo del mes</span>
+          <span class="v">92%</span>
+          <span class="s">del presupuesto, a 4 días de cerrar</span>
+          <span class="bar warn"><span style="width:92%"></span></span>
+        </div>
+        <div class="tile money">
+          <span class="k">Costo día / caballo</span>
+          <span class="v">$—</span>
+          <span class="s">Promedio del mes, se calcula solo</span>
+        </div>
+        <div class="tile">
+          <span class="k">Herrajes esta semana</span>
+          <span class="v">18</span>
+          <span class="s">Martes 11 · Jueves 7</span>
+          <span class="bar"><span style="width:45%"></span></span>
+        </div>
+      </div>
+
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Caballo</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Ubicación</th>
+              <th scope="col">Petisero</th>
+              <th scope="col">Última atención</th>
+              <th scope="col" class="num">Gasto del mes</th>
+              <th scope="col">Alerta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lucera</td>
+              <td><span class="pill ok">En juego</span></td>
+              <td>Campo Norte</td>
+              <td>R. Gómez</td>
+              <td>Herrada 12/07</td>
+              <td class="num">—</td>
+              <td><span class="pill neutral">Al día</span></td>
+            </tr>
+            <tr>
+              <td>Bandera</td>
+              <td><span class="pill crit">Recuperación</span></td>
+              <td>Clínica</td>
+              <td>R. Gómez</td>
+              <td>Tendón, alta est. 18/08</td>
+              <td class="num">—</td>
+              <td><span class="pill crit">Reposo 22 días</span></td>
+            </tr>
+            <tr>
+              <td>Nube</td>
+              <td><span class="pill ok">En juego</span></td>
+              <td>Campo Sur</td>
+              <td>J. Ferreyra</td>
+              <td>Vacuna 03/02</td>
+              <td class="num">—</td>
+              <td><span class="pill warn">Vacuna vencida</span></td>
+            </tr>
+            <tr>
+              <td>Salteña</td>
+              <td><span class="pill neutral">Preñada</span></td>
+              <td>Haras</td>
+              <td>Haras</td>
+              <td>Ecografía 20/07</td>
+              <td class="num">—</td>
+              <td><span class="pill neutral">Parto est. nov.</span></td>
+            </tr>
+            <tr>
+              <td>Pampa</td>
+              <td><span class="pill neutral">Preparación</span></td>
+              <td>Campo Norte</td>
+              <td>M. Sosa</td>
+              <td>Odontología 09/06</td>
+              <td class="num">—</td>
+              <td><span class="pill neutral">Al día</span></td>
+            </tr>
+            <tr>
+              <td>Rufina</td>
+              <td><span class="pill neutral">Prestada</span></td>
+              <td>Est. Los Álamos</td>
+              <td>Tercero</td>
+              <td>Coggins 14/05</td>
+              <td class="num">—</td>
+              <td><span class="pill warn">Coggins vence 14/08</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note">
+      Los importes se dejan en blanco a propósito: se completan en la etapa de relevamiento con los números
+      reales del establo, no con estimaciones.
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">El módulo que más cambia la cabeza</p>
+      <h2>Finanzas: de "cuánto gasté este mes" a "cuánto me cuesta cada caballo"</h2>
+    </div>
+    <div class="col">
+      <p>
+        El salto grande no es registrar gastos, es <strong>imputarlos</strong>. Cada peso que sale se
+        asigna a un rubro y, cuando corresponde, a un caballo o a un grupo. Con eso, el sistema calcula
+        solo el costo por animal, por lote de crianza y por temporada.
+      </p>
+      <p>Los rubros mínimos para arrancar:</p>
+    </div>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Rubro</th>
+            <th scope="col">Cómo se imputa</th>
+            <th scope="col">Para qué sirve el dato</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="field">Alimentación</td><td>Prorrateo por caballo-día según categoría</td><td>Es el rubro más grande y el que mejor muestra el efecto de tener caballos parados</td></tr>
+          <tr><td class="field">Personal</td><td>Prorrateo por cantidad de caballos a cargo</td><td>Mide la relación caballos por petisero y su costo real</td></tr>
+          <tr><td class="field">Veterinaria</td><td>Directo al caballo</td><td>Detecta los animales que consumen tratamiento de forma recurrente</td></tr>
+          <tr><td class="field">Herrería</td><td>Directo al caballo</td><td>Costo previsible y fácil de auditar contra el calendario</td></tr>
+          <tr><td class="field">Pensión / campo</td><td>Por establecimiento y caballo-día</td><td>Permite comparar el costo de tener caballos en un lugar u otro</td></tr>
+          <tr><td class="field">Transporte</td><td>Por viaje, repartido entre los caballos trasladados</td><td>Muestra el costo real de mandar caballos a una temporada</td></tr>
+          <tr><td class="field">Seguros</td><td>Directo al caballo, según suma asegurada</td><td>Cruza cobertura contra valuación y detecta caballos sin asegurar</td></tr>
+          <tr><td class="field">Torneos</td><td>Por temporada o torneo</td><td>Compara el gasto deportivo contra premios e ingresos</td></tr>
+          <tr><td class="field">Reproducción</td><td>Al producto, no a la madre</td><td>Da el costo real de un caballo criado hasta que empieza a jugar</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <h3>Los cuatro informes que salen de acá</h3>
+      <ul>
+        <li><strong>Costo por caballo y por mes</strong>, con el ranking de los diez más caros y los diez más baratos.</li>
+        <li><strong>Presupuesto contra real</strong>, por rubro, con el desvío explicado.</li>
+        <li><strong>Valor del conjunto</strong>: suma de valuaciones contra suma asegurada, para ver la exposición sin cobertura.</li>
+        <li><strong>Resultado por caballo</strong>: lo invertido contra lo generado por venta, alquiler o premios. Es la base para decidir qué vender.</li>
+      </ul>
+      <div class="callout">
+        Todo lo económico se carga en la moneda en que ocurre la operación y con la fecha del gasto. Con
+        cien caballos y temporadas en el exterior, mezclar monedas o cargar "a fin de mes" es lo que
+        arruina cualquier reporte posterior.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">La herramienta</p>
+      <h2>Con qué se construye</h2>
+    </div>
+    <p class="col">
+      Tres caminos posibles. La recomendación es empezar por el segundo: da un sistema real en semanas,
+      funciona desde el celular en el campo y no obliga a decidir hoy una inversión grande.
+    </p>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Opción</th>
+            <th scope="col">A favor</th>
+            <th scope="col">En contra</th>
+            <th scope="col">Cuándo conviene</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="field">Planillas de cálculo</td>
+            <td>Costo cero, todos saben usarlas</td>
+            <td>Se rompe con 100+ caballos e historial: sin fotos, sin permisos, sin alertas, se pisan versiones</td>
+            <td>Solo como paso previo al relevamiento</td>
+          </tr>
+          <tr>
+            <td class="field">Base de datos sin código<br><span class="note">Airtable, Notion o similar</span></td>
+            <td>Listo en semanas, app de celular, adjuntos, permisos por rol, alertas automáticas, vistas por estado y ubicación</td>
+            <td>Abono mensual por usuario; algunos cálculos financieros quedan simples</td>
+            <td><strong>Recomendado para arrancar</strong></td>
+          </tr>
+          <tr>
+            <td class="field">Software a medida</td>
+            <td>Hecho exactamente para el establo, funciona sin señal en el campo, sin límite de usuarios</td>
+            <td>Meses de desarrollo, inversión inicial alta y mantenimiento propio</td>
+            <td>Cuando el sistema ya esté rodado y se quiera escalar</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <p>
+        La decisión importante no es la herramienta sino <strong>la estructura de los datos</strong>. Si la
+        ficha del caballo está bien diseñada desde el día uno, migrar más adelante a un sistema a medida es
+        una exportación, no volver a empezar.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Las personas</p>
+      <h2>Quién carga qué, y cuánto tiempo le lleva</h2>
+    </div>
+    <p class="col">
+      Un sistema con cien caballos no lo sostiene una persona. Se sostiene si cada uno carga poco, en el
+      momento, y desde el celular.
+    </p>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Rol</th>
+            <th scope="col">Qué carga</th>
+            <th scope="col">Cuándo</th>
+            <th scope="col">Tiempo estimado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="field">Petiseros</td><td>Novedades del caballo, foto, observación de estado</td><td>Al detectar algo</td><td>1–2 min por evento</td></tr>
+          <tr><td class="field">Capataz</td><td>Movimientos, herrajes, trabajo del día, asignaciones</td><td>Diario</td><td>10–15 min</td></tr>
+          <tr><td class="field">Veterinario</td><td>Vacunas, diagnósticos, tratamientos, estudios adjuntos</td><td>En cada visita</td><td>5 min por caballo atendido</td></tr>
+          <tr><td class="field">Administración</td><td>Facturas, gastos imputados, papeles, pólizas</td><td>Semanal</td><td>1–2 horas</td></tr>
+          <tr><td class="field">Matías</td><td>Valuaciones, notas de rendimiento, decisiones de venta</td><td>Mensual</td><td>30 min de revisión</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">La ejecución</p>
+      <h2>Plan de implementación en cinco etapas</h2>
+    </div>
+    <p class="col">
+      El orden importa: primero existir, después medir. No se arranca por finanzas porque sin el inventario
+      cerrado, los números no tienen a quién imputarse.
+    </p>
+    <ol class="phases">
+      <li class="phase">
+        <span class="n">Etapa 1<br>Sem. 1–2</span>
+        <div class="body">
+          <h3>Relevamiento</h3>
+          <p>Recorrer los establecimientos y hacer el censo real: cada caballo, con foto, microchip, papeles y ubicación. Es la etapa más trabajosa y la que decide si el sistema sirve.</p>
+          <p class="out">Entregable: listado cerrado y verificado de todos los caballos</p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">Etapa 2<br>Sem. 3–4</span>
+        <div class="body">
+          <h3>Ficha única y ubicaciones</h3>
+          <p>Carga de la base con la ficha completa, el estado de cada animal y el registro de movimientos. Alta de usuarios y permisos por rol. Capacitación corta al equipo del campo.</p>
+          <p class="out">Entregable: sistema en uso para consultar dónde está cada caballo</p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">Etapa 3<br>Sem. 5–6</span>
+        <div class="body">
+          <h3>Sanidad y calendario</h3>
+          <p>Carga del historial sanitario disponible, digitalización de estudios y armado del calendario de vacunas, Coggins, desparasitación y herrería, con alertas automáticas.</p>
+          <p class="out">Entregable: ningún vencimiento sanitario se pasa por alto</p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">Etapa 4<br>Sem. 7–9</span>
+        <div class="body">
+          <h3>Finanzas</h3>
+          <p>Definición de rubros y criterios de imputación, carga de costos de adquisición y valuaciones, y conexión de los gastos mensuales al caballo o al grupo. Primer cierre de mes con el sistema.</p>
+          <p class="out">Entregable: costo por caballo y presupuesto contra real</p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">Etapa 5<br>Sem. 10</span>
+        <div class="body">
+          <h3>Tablero y rutina</h3>
+          <p>Armado del tablero general, los informes mensuales y la rutina de mantenimiento. Se define quién revisa qué y con qué frecuencia, para que el sistema no dependa de nadie en particular.</p>
+          <p class="out">Entregable: sistema funcionando solo, con rutina escrita</p>
+        </div>
+      </li>
+    </ol>
+    <div class="col">
+      <div class="callout">
+        La inversión real de esta propuesta está en la Etapa 1 y en el abono mensual de la herramienta.
+        Los montos se cierran después del relevamiento, cuando se sepa la cantidad exacta de caballos,
+        de usuarios y el volumen de papeles a digitalizar. Cualquier número antes de eso sería inventado.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">La parte difícil</p>
+      <h2>Cinco reglas para que el sistema no se muera en tres meses</h2>
+    </div>
+    <p class="col">
+      La mayoría de estos proyectos no fracasan por la herramienta: fracasan porque se dejan de cargar los
+      datos. Estas cinco reglas son parte de la propuesta, no un detalle.
+    </p>
+    <div class="rules">
+      <div class="rule-card">
+        <h3>Un solo lugar</h3>
+        <p>Si un dato sigue viviendo también en un cuaderno o en un chat, el sistema queda desactualizado y nadie vuelve a confiar en él.</p>
+      </div>
+      <div class="rule-card">
+        <h3>Se carga en el momento</h3>
+        <p>Desde el celular, parado al lado del caballo. Todo lo que se deja "para después" no se carga nunca.</p>
+      </div>
+      <div class="rule-card">
+        <h3>Un responsable por dato</h3>
+        <p>Cada campo tiene un dueño. Si todos pueden cargar todo, en la práctica no lo carga nadie.</p>
+      </div>
+      <div class="rule-card">
+        <h3>Poco y obligatorio</h3>
+        <p>Mejor diez campos que se completan siempre que cuarenta que se completan a medias. Se agregan campos recién cuando el hábito está.</p>
+      </div>
+      <div class="rule-card">
+        <h3>Revisión mensual con Matías</h3>
+        <p>Media hora por mes mirando el tablero. Es lo que hace que el equipo sepa que los datos se usan de verdad.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <p class="eyebrow">El próximo paso</p>
+    <h2>Arrancar por el censo</h2>
+    <p>
+      Para poner esto en marcha no hace falta decidir todo hoy. Alcanza con tres definiciones:
+    </p>
+    <ol>
+      <li><strong>Confirmar el alcance:</strong> cuántos caballos, en cuántos establecimientos y si entran también los que están prestados o en sociedad.</li>
+      <li><strong>Definir el equipo:</strong> quién es el capataz responsable de la carga diaria y quién administra. Sin esos dos nombres, el sistema no camina.</li>
+      <li><strong>Fijar la fecha del relevamiento:</strong> dos semanas de recorrida para el censo, idealmente fuera de temporada alta.</li>
+    </ol>
+    <p>
+      Con eso cerrado, en diez semanas Matías puede abrir el celular y saber, de cualquiera de sus cien
+      caballos, dónde está, qué le hicieron y cuánto cuesta.
+    </p>
+  </section>
+
+</div>
