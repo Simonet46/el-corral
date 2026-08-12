@@ -391,7 +391,7 @@
   var sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
   var ESTADOS = [
-    { id: "competicion", label: "Competición",   color: "var(--st-comp)",     desc: "Juega torneos esta temporada" },
+    { id: "competicion", label: "Caballeriza principal", color: "var(--st-comp)", desc: "El conjunto que está jugando" },
     { id: "juego",       label: "En juego",      color: "var(--st-juego)",    desc: "Trabajando y disponible" },
     { id: "hechura",     label: "Hechura",       color: "var(--st-prep)",     desc: "Haciéndose con el piloto" },
     { id: "doma",        label: "Doma",          color: "var(--st-doma)",     desc: "Primeros trabajos" },
@@ -413,6 +413,11 @@
     { id: "recuperacion", label: "Recuperación" }
   ];
   var SEXOS = ["Yegua", "Padrillo", "Castrado", "Potranca", "Potrillo"];
+  var LOTES = [
+    { id: "A", label: "Lote A" },
+    { id: "B", label: "Lote B" },
+    { id: "NUEVAS", label: "Nuevas" }
+  ];
   var TIPOS_ACT = [
     { id: "practica", label: "Práctica", letra: "P", cssVar: "--st-juego" },
     { id: "vareo",    label: "Vareo",    letra: "V", cssVar: "--st-prep" },
@@ -640,7 +645,7 @@
   var CAMPOS = [
     ["nombre","nombre"],["apodo","apodo"],["sexo","sexo"],["nacimiento","nacimiento"],["pelaje","pelaje"],
     ["estado","estado"],["reproductivo","reproductivo"],["ubicacion","ubicacion"],["petisero","petisero"],
-    ["jinete","jinete"],["criador","criador"],["microchip","microchip"],["origen","origen"],
+    ["jinete","jinete"],["criador","criador"],["microchip","microchip"],["origen","origen"],["lote","lote"],
     ["observacionesFisicas","observaciones"],["historialClinico","historial_clinico"],["notas","notas"],["video","video_link"],
     ["vacunaFecha","vacuna_fecha"],["cogginsFecha","coggins_fecha"],["herrajeFecha","herraje_fecha"],
     ["desparasitacionFecha","desparasitacion_fecha"],["odontologiaFecha","odontologia_fecha"],["altaEstimada","alta_estimada"],
@@ -1039,7 +1044,16 @@
       '<div class="h-sec"><div><p class="eyebrow">Tablero general</p><h2>' + act.length + ' caballos activos</h2></div>' +
       '<p class="sub">' + db.horses.length + " fichas en total · " + (porEstado.baja || 0) + " dados de baja</p></div>" +
       '<div class="tiles">' +
-        tile("Competición", porEstado.competicion || 0, "Juegan torneos esta temporada") +
+        (function () {
+          var caba = act.filter(function (h) { return h.estado === "competicion"; });
+          var partes = LOTES.map(function (l) {
+            var n = caba.filter(function (h) { return h.lote === l.id; }).length;
+            return n ? l.label + " " + n : null;
+          }).filter(Boolean);
+          var sinLote = caba.filter(function (h) { return !h.lote; }).length;
+          if (partes.length && sinLote) partes.push("sin lote " + sinLote);
+          return tile("Caballeriza principal", caba.length, partes.length ? partes.join(" · ") : "El conjunto que está jugando");
+        })() +
         tile("En juego", porEstado.juego || 0, "Trabajando y disponibles") +
         tile("Hechura y doma", (porEstado.hechura || 0) + (porEstado.doma || 0), "Haciéndose y primeros trabajos") +
         tile("Recuperación", porEstado.recuperacion || 0, "En reposo o tratamiento", "alert") +
@@ -1081,7 +1095,15 @@
     var dias = diasDelMes(ui.calMes);
     var hoyF = hoy();
     var lista = db.horses
-      .filter(function (h) { return h.estado !== "baja" && (!ui.calFiltro || h.estado === ui.calFiltro); })
+      .filter(function (h) {
+        if (h.estado === "baja") return false;
+        if (!ui.calFiltro) return true;
+        if (ui.calFiltro.indexOf(":") > -1) {
+          var pf = ui.calFiltro.split(":");
+          return h.estado === pf[0] && (h.lote || "") === pf[1];
+        }
+        return h.estado === ui.calFiltro;
+      })
       .sort(function (a, b) { return norm(a.nombre).localeCompare(norm(b.nombre)); });
 
     var cabecera = dias.map(function (d) {
@@ -1111,7 +1133,14 @@
         '<option value="">Todos (' + lista.length + ")</option>" +
         ESTADOS.filter(function (e) { return e.id !== "baja"; }).map(function (e) {
           var n = db.horses.filter(function (h) { return h.estado === e.id; }).length;
-          return '<option value="' + e.id + '"' + (ui.calFiltro === e.id ? " selected" : "") + ">" + esc(e.label) + " (" + n + ")</option>";
+          var op = '<option value="' + e.id + '"' + (ui.calFiltro === e.id ? " selected" : "") + ">" + esc(e.label) + " (" + n + ")</option>";
+          if (e.id === "competicion") {
+            LOTES.forEach(function (l) {
+              var nl = db.horses.filter(function (h) { return h.estado === "competicion" && h.lote === l.id; }).length;
+              if (nl) op += '<option value="competicion:' + l.id + '"' + (ui.calFiltro === "competicion:" + l.id ? " selected" : "") + ">&nbsp;&nbsp;· " + esc(l.label) + " (" + nl + ")</option>";
+            });
+          }
+          return op;
         }).join("") +
       "</select></div>" +
       '<div class="row" style="gap:.3rem .8rem;margin-top:.4rem"><span class="note">Tocá un casillero para marcar:</span>' +
@@ -1273,9 +1302,19 @@
         ? ubicaciones().concat([""]).map(function (u) {
             return { label: u || "Sin ubicación", color: "var(--faint)", items: lista.filter(function (h) { return (h.ubicacion || "") === u; }) };
           })
-        : ESTADOS.map(function (e) {
-            return { label: e.label, color: e.color, items: lista.filter(function (h) { return h.estado === e.id; }), desc: e.desc };
-          });
+        : ESTADOS.reduce(function (acc, e) {
+            var deEstado = lista.filter(function (h) { return h.estado === e.id; });
+            var hayLotes = e.id === "competicion" && deEstado.some(function (h) { return h.lote; });
+            if (hayLotes) {
+              LOTES.concat([{ id: "", label: "Sin lote" }]).forEach(function (l) {
+                var items = deEstado.filter(function (h) { return (h.lote || "") === l.id; });
+                if (items.length) acc.push({ label: "Caballeriza · " + l.label, color: e.color, items: items, desc: e.desc });
+              });
+            } else if (deEstado.length) {
+              acc.push({ label: e.label, color: e.color, items: deEstado, desc: e.desc });
+            }
+            return acc;
+          }, []);
       grupos = grupos.filter(function (g) { return g.items.length; });
       cuerpo = '<div class="potreros">' + grupos.map(function (g) {
         return '<div class="potrero"><div class="pot-head"><span class="sw" style="background:' + g.color + '"></span>' +
@@ -1301,7 +1340,7 @@
             segBtn("estado", "Por estado") + segBtn("ubicacion", "Por ubicación") + segBtn("junto", "Todo junto") +
           "</div>" +
           '<span class="pill flat">P = preñada</span><span class="pill flat">V = vacía</span>' +
-          '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">◎ anillo dorado = competición</span>' +
+          '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">◎ anillo dorado = caballeriza ppal.</span>' +
         "</div>" +
         cuerpo +
         '<div class="legend">' + leyenda +
@@ -1708,7 +1747,7 @@
 
     html += '<div class="stack">' +
       '<div><div class="row" style="gap:.6rem">' + pillEstado(h) +
-        (h.estado === "competicion" ? '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">Temporada activa</span>' : "") +
+        (h.estado === "competicion" && h.lote ? '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">' + esc((LOTES.filter(function (l) { return l.id === h.lote; })[0] || {}).label || h.lote) + "</span>" : "") +
         (letraRepro(h) === "P" ? '<span class="pill" style="background:color-mix(in srgb,var(--st-vientre) 15%,transparent);color:var(--st-vientre)">Preñada</span>' : "") +
         (letraRepro(h) === "V" ? '<span class="pill flat">Vacía</span>' : "") +
       "</div>" +
@@ -1931,6 +1970,7 @@
 
     html += '<fieldset class="fs"><legend>Estado y ubicación</legend><div class="grid2">' +
       sel("estado", "Estado", ESTADOS.map(function (e) { return { v: e.id, t: e.label }; }), n.estado || "juego") +
+      sel("lote", "Lote (caballeriza principal)", [{ v: "", t: "Sin lote" }].concat(LOTES.map(function (l) { return { v: l.id, t: l.label }; })), n.lote) +
       sel("reproductivo", "Estado reproductivo (hembras)", [{ v: "", t: "No aplica" }, { v: "vacia", t: "Vacía (V)" }, { v: "prenada", t: "Preñada (P)" }], n.reproductivo) +
       inp("ubicacion", "Ubicación", n.ubicacion, "text", 'list="l-ubic"') +
       inp("petisero", "Petisero a cargo", n.petisero) +
@@ -2112,7 +2152,7 @@
     var nuevo = h || { id: uid(), creado: hoy(), movimientos: [] };
     var ubicAnterior = h ? (h.ubicacion || "") : "";
 
-    ["nombre", "apodo", "sexo", "nacimiento", "pelaje", "microchip", "criador", "origen", "video",
+    ["nombre", "apodo", "sexo", "nacimiento", "pelaje", "microchip", "criador", "origen", "video", "lote",
      "estado", "reproductivo", "ubicacion", "petisero", "jinete", "altaEstimada", "fechaBaja", "motivoBaja",
      "padre", "madre", "servicio", "receptora", "fechaParto",
      "vacunaFecha", "cogginsFecha", "herrajeFecha", "desparasitacionFecha", "odontologiaFecha",
