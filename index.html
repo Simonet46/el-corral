@@ -272,6 +272,10 @@
   .photos .p { position: relative; width: 5rem; height: 5rem; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
   .photos .p img { width: 100%; height: 100%; object-fit: cover; }
   .photos .p button { position: absolute; right: .15rem; top: .15rem; width: 1.2rem; height: 1.2rem; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: .7rem; line-height: 1; cursor: pointer; }
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .8rem; }
+  .vfig { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .vfig video { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: #000; }
+
   .slider-row { display: grid; grid-template-columns: 7.5rem 1fr 1.6rem; gap: .6rem; align-items: center; }
   .slider-row input[type=range] { width: 100%; accent-color: var(--accent); }
   .slider-row .n { font-family: var(--mono); font-size: .82rem; text-align: right; }
@@ -385,6 +389,8 @@
       if (!d.settings) d.settings = { fx: 1000, moneda: "USD" };
       if (!Array.isArray(d.temporadas)) d.temporadas = [];
       d.horses.forEach(function (h) { if (!Array.isArray(h.movimientos)) h.movimientos = []; });
+      var mapaOrigen = { "Criado propio": "Manada (cría propia)", "Embrión": "Embrión (cría propia)", "Clon": "Embrión (cría propia)", "Recibido": "" };
+      d.horses.forEach(function (h) { if (mapaOrigen.hasOwnProperty(h.origen)) h.origen = mapaOrigen[h.origen]; });
       return d;
     } catch (e) { return defaults(); }
   }
@@ -600,6 +606,70 @@
 
   function bytesUsados() {
     try { return new Blob([JSON.stringify(db)]).size; } catch (e) { return JSON.stringify(db).length; }
+  }
+
+  /* ---------- videos (IndexedDB: mucho más espacio que localStorage) ---------- */
+
+  var mediaDB = null;
+  function abrirMedia() {
+    return new Promise(function (res, rej) {
+      if (mediaDB) return res(mediaDB);
+      if (!window.indexedDB) return rej(new Error("sin indexedDB"));
+      var rq = indexedDB.open("elcorral-media", 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore("videos"); };
+      rq.onsuccess = function () { mediaDB = rq.result; res(mediaDB); };
+      rq.onerror = function () { rej(rq.error); };
+    });
+  }
+  function guardarVideoIdb(blob) {
+    return abrirMedia().then(function (dbm) {
+      return new Promise(function (res, rej) {
+        var k = "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        var tx = dbm.transaction("videos", "readwrite");
+        tx.objectStore("videos").put(blob, k);
+        tx.oncomplete = function () { res(k); };
+        tx.onerror = function () { rej(tx.error); };
+      });
+    });
+  }
+  function leerVideoIdb(k) {
+    return abrirMedia().then(function (dbm) {
+      return new Promise(function (res, rej) {
+        var rq = dbm.transaction("videos").objectStore("videos").get(k);
+        rq.onsuccess = function () { res(rq.result || null); };
+        rq.onerror = function () { rej(rq.error); };
+      });
+    });
+  }
+  function limpiarVideosHuerfanos() {
+    abrirMedia().then(function (dbm) {
+      var usados = {};
+      db.horses.forEach(function (h) { (h.videosIdb || []).forEach(function (v) { usados[v.k] = 1; }); });
+      var st = dbm.transaction("videos", "readwrite").objectStore("videos");
+      var rq = st.getAllKeys();
+      rq.onsuccess = function () {
+        (rq.result || []).forEach(function (k) { if (!usados[k]) st.delete(k); });
+      };
+    }).catch(function () {});
+  }
+  var urlsVideo = [];
+  function hidratarVideos() {
+    urlsVideo.forEach(function (u) { URL.revokeObjectURL(u); });
+    urlsVideo = [];
+    $$("video[data-vkey]").forEach(function (el) {
+      leerVideoIdb(el.dataset.vkey).then(function (blob) {
+        if (!blob) {
+          var pnota = document.createElement("p");
+          pnota.className = "note";
+          pnota.textContent = "Este video quedó en el dispositivo donde se cargó y acá no está disponible.";
+          el.replaceWith(pnota);
+          return;
+        }
+        var u = URL.createObjectURL(blob);
+        urlsVideo.push(u);
+        el.src = u;
+      }).catch(function () {});
+    });
   }
 
   /* ============ componentes ============ */
@@ -1117,7 +1187,7 @@
     return '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Datos</p><h2>Respaldo y espacio</h2></div></div>' +
       '<div class="grid2">' +
         '<div class="card pad stack"><p class="eyebrow">Respaldo</p>' +
-          '<p class="sub">Los datos viven en este navegador. Exportá seguido: ese archivo es tu copia de seguridad y sirve para pasar todo a otra computadora o al celular.</p>' +
+          '<p class="sub">Los datos viven en este navegador. Exportá seguido: ese archivo es tu copia de seguridad y sirve para pasar todo a otra computadora o al celular. Ojo: los videos no entran en el respaldo, quedan solo en el dispositivo donde se cargaron.</p>' +
           '<div class="row"><button class="btn primary" id="export">Exportar respaldo</button>' +
           '<label class="btn" style="cursor:pointer">Importar respaldo<input type="file" id="import" accept="application/json" hidden></label>' +
           '<button class="btn" id="print">Imprimir listado</button></div></div>' +
@@ -1193,7 +1263,7 @@
       kv("Petisero", h.petisero || "—") +
       kv("Jinete", h.jinete || "—") +
       kv("Criador", h.criador || "—") +
-      kv("Microchip", h.microchip || "—") +
+      kv("Microchip / marca", h.microchip || "—") +
     "</div>";
 
     if (al.length) {
@@ -1214,6 +1284,16 @@
           return '<div class="r"><span class="lb">' + esc(a.label) + '</span><span class="bar"><span style="width:' + (v * 10) + '%"></span></span><span class="n">' + v + "</span></div>";
         }).join("") + "</div>" +
         (h.observacionesFisicas ? '<p class="sub">' + esc(h.observacionesFisicas) + "</p>" : "") + "</div>";
+    }
+
+    /* videos */
+    var vids = h.videosIdb || [];
+    if (vids.length) {
+      html += '<div class="card pad stack no-print"><p class="eyebrow">Videos — ' + vids.length + "</p>" +
+        '<div class="vgrid">' + vids.map(function (v) {
+          return '<figure class="vfig"><video controls preload="metadata" playsinline data-vkey="' + esc(v.k) + '"></video>' +
+            (v.nombre ? '<figcaption class="note">' + esc(v.nombre) + "</figcaption>" : "") + "</figure>";
+        }).join("") + "</div></div>";
     }
 
     /* torneos */
@@ -1339,14 +1419,17 @@
       sel("sexo", "Sexo", SEXOS, n.sexo || "Yegua") +
       inp("nacimiento", "Fecha de nacimiento", n.nacimiento, "date") +
       inp("pelaje", "Pelaje y señas", n.pelaje) +
-      inp("microchip", "Microchip / nº interno", n.microchip) +
+      inp("microchip", "Microchip / n° de marca", n.microchip) +
       inp("criador", "Criador", n.criador) +
-      sel("origen", "Origen", ["", "Criado propio", "Comprado", "Embrión", "Clon", "Recibido"], n.origen) +
+      sel("origen", "Origen", ["", "Embrión (cría propia)", "Manada (cría propia)", "Compra de embrión", "Comprado"], n.origen) +
       "</div>" +
       '<div class="field"><label>Fotos</label><div class="photos" id="photos"></div>' +
       '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar fotos<input type="file" id="foto-in" accept="image/*" multiple hidden></label>' +
       '<p class="note">Se achican solas a 620 px para no llenar el espacio. Recomendado: hasta 4 por caballo.</p></div>' +
-      inp("video", "Link a video de juego", n.video, "url") +
+      '<div class="field"><label>Videos</label><div class="rowset" id="vlist"></div>' +
+      '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar video<input type="file" id="video-in" accept="video/*" hidden></label>' +
+      '<p class="note">Se pueden filmar directo con el celular. Quedan guardados solo en este dispositivo y no entran en el respaldo exportado. Máximo 100 MB por video.</p></div>' +
+      inp("video", "Link a video de juego (YouTube u otro)", n.video, "url") +
       "</fieldset>";
 
     html += '<fieldset class="fs"><legend>Estado y ubicación</legend><div class="grid2">' +
@@ -1411,7 +1494,7 @@
   }
 
   /* filas dinámicas */
-  var draft = { fotos: [], torneos: [], gastos: [], ingresos: [] };
+  var draft = { fotos: [], torneos: [], gastos: [], ingresos: [], videosIdb: [] };
 
   function pintarFotos() {
     var box = $("#photos");
@@ -1419,6 +1502,17 @@
     box.innerHTML = draft.fotos.map(function (f, i) {
       return '<div class="p"><img src="' + f + '" alt="Foto ' + (i + 1) + '"><button type="button" data-rm-foto="' + i + '" aria-label="Quitar foto">×</button></div>';
     }).join("") || '<p class="note">Sin fotos todavía.</p>';
+  }
+
+  function pintarVideos() {
+    var box = $("#vlist");
+    if (!box) return;
+    box.innerHTML = draft.videosIdb.map(function (v, i) {
+      return '<div class="rw" style="grid-template-columns:1fr auto 2rem">' +
+        '<div class="field"><label>Título del video</label><input value="' + esc(v.nombre || "") + '" data-vt="' + i + '"></div>' +
+        '<span class="note" style="align-self:center">' + (v.mb ? v.mb + " MB" : "") + "</span>" +
+        '<button type="button" class="del" data-rm-v="' + i + '" aria-label="Quitar video">×</button></div>';
+    }).join("") || '<p class="note">Sin videos todavía.</p>';
   }
 
   function pintarTorneos() {
@@ -1492,6 +1586,7 @@
     $$(".cur-toggle button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.cur === ui.cur); });
 
     if (r.vista === "nuevo" || r.vista === "editar") montarForm(r.id);
+    hidratarVideos();
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   }
 
@@ -1501,7 +1596,8 @@
     draft.torneos = h && h.torneos ? JSON.parse(JSON.stringify(h.torneos)) : [];
     draft.gastos = h && h.gastos ? JSON.parse(JSON.stringify(h.gastos)) : [];
     draft.ingresos = h && h.ingresos ? JSON.parse(JSON.stringify(h.ingresos)) : [];
-    pintarFotos(); pintarTorneos(); pintarMovs("gastos"); pintarMovs("ingresos");
+    draft.videosIdb = h && h.videosIdb ? JSON.parse(JSON.stringify(h.videosIdb)) : [];
+    pintarFotos(); pintarVideos(); pintarTorneos(); pintarMovs("gastos"); pintarMovs("ingresos");
   }
 
   function guardar(form, id) {
@@ -1532,6 +1628,7 @@
     });
 
     nuevo.fotos = draft.fotos.slice();
+    nuevo.videosIdb = draft.videosIdb.slice();
     nuevo.torneos = draft.torneos.filter(function (t) { return t.torneo || t.anio; });
     nuevo.gastos = draft.gastos.filter(function (g) { return g.monto; });
     nuevo.ingresos = draft.ingresos.filter(function (g) { return g.monto; });
@@ -1580,6 +1677,7 @@
     if (t.id === "f-clear") { ui.filtros = { estado: "", ubicacion: "", sexo: "", incluirBajas: false }; ui.q = ""; $("#q").value = ""; render(); return; }
 
     if (t.dataset && t.dataset.rmFoto != null) { draft.fotos.splice(Number(t.dataset.rmFoto), 1); pintarFotos(); return; }
+    if (t.dataset && t.dataset.rmV != null) { draft.videosIdb.splice(Number(t.dataset.rmV), 1); pintarVideos(); return; }
     if (t.dataset && t.dataset.rmT != null) { draft.torneos.splice(Number(t.dataset.rmT), 1); pintarTorneos(); return; }
     if (t.dataset && t.dataset.rmG != null) { draft[t.dataset.k].splice(Number(t.dataset.rmG), 1); pintarMovs(t.dataset.k); return; }
     if (t.id === "add-torneo") { draft.torneos.push({ anio: new Date().getFullYear() }); pintarTorneos(); return; }
@@ -1674,6 +1772,7 @@
     }
     if (t.id === "fx") { db.settings.fx = Number(t.value) || 1; save(); render(); $("#fx") && $("#fx").focus(); return; }
     if (t.dataset && t.dataset.apt) { var s = $("#av-" + t.dataset.apt); if (s) s.textContent = t.value === "0" ? "–" : t.value; return; }
+    if (t.dataset && t.dataset.vt != null) { draft.videosIdb[Number(t.dataset.vt)].nombre = t.value; return; }
     if (t.dataset && t.dataset.t) { draft.torneos[Number(t.dataset.i)][t.dataset.t] = t.value; return; }
     if (t.dataset && t.dataset.g) { draft[t.dataset.k][Number(t.dataset.i)][t.dataset.g] = t.value; return; }
   });
@@ -1695,6 +1794,20 @@
       return;
     }
     if (t.dataset && t.dataset.g) { draft[t.dataset.k][Number(t.dataset.i)][t.dataset.g] = t.value; return; }
+
+    if (t.id === "video-in") {
+      var vf = t.files && t.files[0];
+      t.value = "";
+      if (!vf) return;
+      if (vf.size > 100 * 1024 * 1024) { toast("Ese video pesa más de 100 MB. Filmá uno más corto o recortalo."); return; }
+      var vmb = Math.max(1, Math.round(vf.size / 1048576));
+      guardarVideoIdb(vf).then(function (k) {
+        draft.videosIdb.push({ k: k, nombre: vf.name.replace(/\.[^.]+$/, ""), mb: vmb });
+        pintarVideos();
+        toast("Video guardado en este dispositivo.");
+      }).catch(function () { toast("No pude guardar el video en este navegador."); });
+      return;
+    }
 
     if (t.id === "foto-in") {
       var files = Array.prototype.slice.call(t.files || []);
@@ -1853,7 +1966,7 @@
           nacimiento: enFecha(anio - ed, ent(8, 11), ent(1, 28)),
           pelaje: pick(PELAJES),
           criador: pick(CRIADORES),
-          origen: quizas(0.55) ? "Criado propio" : "Comprado",
+          origen: quizas(0.55) ? (quizas(0.5) ? "Manada (cría propia)" : "Embrión (cría propia)") : (quizas(0.8) ? "Comprado" : "Compra de embrión"),
           estado: g.estado,
           reproductivo: "vacia",
           ubicacion: pick(UBICACIONES),
@@ -1913,7 +2026,7 @@
         else if (g.estado === "prestada") val = ent(10, 25) * 1000;
         else if (g.estado === "retirada") val = ent(2, 7) * 1000;
         if (g.estado !== "baja") { h.valuacion = val; h.valuacionMoneda = "USD"; }
-        if (h.origen === "Comprado") { h.costoMonto = Math.round(val * (0.5 + rnd() * 0.5) / 500) * 500; h.costoMoneda = "USD"; }
+        if (h.origen === "Comprado" || h.origen === "Compra de embrión") { h.costoMonto = Math.round(val * (0.5 + rnd() * 0.5) / 500) * 500; h.costoMoneda = "USD"; }
         if (val >= 30000 && quizas(0.6)) { h.seguroSuma = Math.round(val * 0.85 / 1000) * 1000; h.seguroMoneda = "USD"; }
         if (g.estado === "competicion" && quizas(0.3)) { h.precioVenta = Math.round(val * 1.2 / 1000) * 1000; h.precioMoneda = "USD"; }
 
@@ -1981,7 +2094,7 @@
     function anioDe(h) { return Number(String(h.nacimiento).slice(0, 4)); }
     nuevos.forEach(function (h) {
       if (h.estado === "baja" || h.sexo === "Padrillo") return;
-      if (h.origen !== "Criado propio") return;
+      if (String(h.origen).indexOf("cría propia") === -1) return;
       /* una yegua no puede tener un producto antes de los 4 años */
       var posibles = madres.filter(function (m) { return anioDe(h) - anioDe(m) >= 4; });
       if (quizas(0.7) && posibles.length) {
@@ -2000,7 +2113,7 @@
     estrella.nacimiento = enFecha(anio - 9, 10, 12);
     estrella.pelaje = "Zaina, lucero";
     estrella.criador = "La Media Luna";
-    estrella.origen = "Criado propio";
+    estrella.origen = "Embrión (cría propia)";
     estrella.ubicacion = "Campo Norte";
     estrella.petisero = "R. Gómez";
     estrella.valuacion = 85000; estrella.valuacionMoneda = "USD";
@@ -2023,7 +2136,7 @@
     [2, 3].forEach(function (nro) {
       var c = nuevos[nro + 20];
       c.nombre = "Lucera B0" + nro;
-      c.origen = "Clon";
+      c.origen = "Embrión (cría propia)";
       c.criador = "La Media Luna";
       c.madre = ""; c.padre = "";
       c.notas = "Clon de Lucera. Mismo pelaje y las mismas señas.";
@@ -2042,7 +2155,7 @@
       reina.fotos = [FOTO_SALTENA];
       reina.pelaje = "Alazana";
       nuevos.filter(function (h) {
-        return h.origen === "Criado propio" && h.madre && h.estado !== "vientre" && anioDe(h) - anioDe(reina) >= 4;
+        return String(h.origen).indexOf("cría propia") > -1 && h.madre && h.estado !== "vientre" && anioDe(h) - anioDe(reina) >= 4;
       }).slice(0, 7).forEach(function (h) { h.madre = "Salteña"; });
     }
 
@@ -2101,5 +2214,6 @@
 
   if (!location.hash) location.hash = "#/tablero";
   render();
+  limpiarVideosHuerfanos();
 })();
 </script>
