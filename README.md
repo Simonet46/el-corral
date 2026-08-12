@@ -78,6 +78,14 @@ Cada idea que llegue queda anotada en la [lista de pendientes](https://github.co
 
 ---
 
+## La versión con cuentas (beta)
+
+👉 **https://simonet46.github.io/el-corral/beta/**
+
+Es la misma app, pero con los datos **en el servidor**: entrás con tu correo y contraseña, y todos los del criadero ven los mismos caballos desde cualquier dispositivo — lo que se carga en el campo aparece al instante en la computadora. Además cada caballo puede tener su **ficha pública por link** para mandarle a un comprador.
+
+Para entrar hace falta una cuenta y el **código de invitación** del criadero (lo tiene el dueño, en la pestaña Datos). La versión de arriba sigue funcionando igual que siempre, sin cuentas, para probar.
+
 ## Adónde va esto
 
 Este es el primer paso. Lo que viene está en [docs/ROADMAP.md](docs/ROADMAP.md): la evolución de cada yegua en video, la ficha comercial compartible por link, y que cada uno del establo entre con su usuario.

@@ -1,0 +1,2360 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Corral — Gestión del establo de Matías</title>
+
+<style>
+  :root {
+    --ground: #EEF1EB;
+    --surface: #FBFCF8;
+    --surface-2: #E5EAE1;
+    --surface-3: #DBE1D6;
+    --ink: #14201A;
+    --ink-soft: #384840;
+    --muted: #5E6E64;
+    --faint: #8C998F;
+    --rule: #D3DBCF;
+    --rule-soft: #E2E7DE;
+    --accent: #1E5A3F;
+    --accent-ink: #FBFCF8;
+    --accent-soft: #DBE8DE;
+    --brass: #8A6C22;
+    --brass-soft: #F0E6CB;
+    --shadow: 0 1px 2px rgba(20,32,26,.06), 0 6px 18px rgba(20,32,26,.05);
+
+    --st-comp: #C08A12;
+    --st-juego: #2F7A4E;
+    --st-prep: #3B7595;
+    --st-recup: #AE4530;
+    --st-vientre: #7E5795;
+    --st-prestada: #61756A;
+    --st-retirada: #8A8371;
+    --st-baja: #55605A;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Avenir Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0E1411; --surface: #151C18; --surface-2: #1C2520; --surface-3: #243029;
+      --ink: #E8EDE6; --ink-soft: #C5CEC7; --muted: #93A197; --faint: #6E7C73;
+      --rule: #26312B; --rule-soft: #1E2822;
+      --accent: #74C295; --accent-ink: #0E1411; --accent-soft: #1B2E24;
+      --brass: #D6B064; --brass-soft: #2B2417;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+      --st-comp: #E0B44B; --st-juego: #6ABF8B; --st-prep: #6FAACD; --st-recup: #DE8168;
+      --st-vientre: #B58FC9; --st-prestada: #93A79B; --st-retirada: #BBB29A; --st-baja: #7E8A83;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1411; --surface: #151C18; --surface-2: #1C2520; --surface-3: #243029;
+    --ink: #E8EDE6; --ink-soft: #C5CEC7; --muted: #93A197; --faint: #6E7C73;
+    --rule: #26312B; --rule-soft: #1E2822;
+    --accent: #74C295; --accent-ink: #0E1411; --accent-soft: #1B2E24;
+    --brass: #D6B064; --brass-soft: #2B2417;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    --st-comp: #E0B44B; --st-juego: #6ABF8B; --st-prep: #6FAACD; --st-recup: #DE8168;
+    --st-vientre: #B58FC9; --st-prestada: #93A79B; --st-retirada: #BBB29A; --st-baja: #7E8A83;
+  }
+  :root[data-theme="light"] {
+    --ground: #EEF1EB; --surface: #FBFCF8; --surface-2: #E5EAE1; --surface-3: #DBE1D6;
+    --ink: #14201A; --ink-soft: #384840; --muted: #5E6E64; --faint: #8C998F;
+    --rule: #D3DBCF; --rule-soft: #E2E7DE;
+    --accent: #1E5A3F; --accent-ink: #FBFCF8; --accent-soft: #DBE8DE;
+    --brass: #8A6C22; --brass-soft: #F0E6CB;
+    --shadow: 0 1px 2px rgba(20,32,26,.06), 0 6px 18px rgba(20,32,26,.05);
+    --st-comp: #C08A12; --st-juego: #2F7A4E; --st-prep: #3B7595; --st-recup: #AE4530;
+    --st-vientre: #7E5795; --st-prestada: #61756A; --st-retirada: #8A8371; --st-baja: #55605A;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  p { margin: 0; }
+  h1,h2,h3,h4 { margin: 0; }
+  ul { margin: 0; padding-left: 1.1rem; }
+  img { max-width: 100%; display: block; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  /* ---------- topbar ---------- */
+  .top { position: sticky; top: 0; z-index: 40; background: var(--surface); border-bottom: 1px solid var(--rule); }
+  .top-in { max-width: 78rem; margin: 0 auto; padding: .6rem clamp(.7rem,2.5vw,1.4rem); display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: .5rem; margin-right: auto; }
+  .brand b { font-family: var(--serif); font-weight: 400; font-size: 1.3rem; letter-spacing: -.01em; }
+  .brand span { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .search { position: relative; flex: 1 1 15rem; min-width: 11rem; }
+  .search input { width: 100%; padding: .48rem .7rem .48rem 1.9rem; background: var(--ground); border: 1px solid var(--rule); border-radius: 4px; font-size: .92rem; }
+  .search .ico { position: absolute; left: .55rem; top: 50%; transform: translateY(-50%); color: var(--faint); font-size: .9rem; }
+  .search kbd { position: absolute; right: .45rem; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: .6rem; color: var(--faint); border: 1px solid var(--rule); border-radius: 3px; padding: 0 .25rem; }
+  .cur-toggle { display: flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .cur-toggle button { background: var(--ground); border: 0; padding: .35rem .55rem; font-family: var(--mono); font-size: .68rem; letter-spacing: .06em; color: var(--muted); cursor: pointer; }
+  .cur-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+  .tabs { border-bottom: 1px solid var(--rule); background: var(--surface); position: sticky; top: 3.1rem; z-index: 39; }
+  .tabs-in { max-width: 78rem; margin: 0 auto; padding: 0 clamp(.7rem,2.5vw,1.4rem); display: flex; gap: .1rem; overflow-x: auto; }
+  .tabs a { display: block; padding: .55rem .8rem; font-size: .88rem; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .tabs a:hover { color: var(--ink); }
+  .tabs a.on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+
+  main { max-width: 78rem; margin: 0 auto; padding: clamp(1rem,3vw,2rem) clamp(.7rem,2.5vw,1.4rem) 5rem; display: flex; flex-direction: column; gap: 1.6rem; }
+
+  /* ---------- primitivas ---------- */
+  .eyebrow { font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .h-sec { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .h-sec h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.35rem,3vw,1.75rem); letter-spacing: -.015em; }
+  .sub { color: var(--muted); font-size: .9rem; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; box-shadow: var(--shadow); }
+  .pad { padding: clamp(.9rem,2vw,1.25rem); }
+  .row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+  .grow { flex: 1; }
+  .stack { display: flex; flex-direction: column; gap: .9rem; }
+
+  .btn { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: .42rem .8rem; font-size: .88rem; cursor: pointer; display: inline-flex; align-items: center; gap: .35rem; text-decoration: none; color: var(--ink); }
+  .btn:hover { background: var(--surface-2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.danger { color: var(--st-recup); border-color: var(--st-recup); background: transparent; }
+  .btn.sm { padding: .25rem .55rem; font-size: .78rem; }
+
+  .pill { display: inline-flex; align-items: center; gap: .3rem; font-family: var(--mono); font-size: .64rem; letter-spacing: .05em; text-transform: uppercase; padding: .18rem .45rem; border-radius: 3px; white-space: nowrap; border: 1px solid transparent; }
+  .pill .dotc { width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+  .pill.warn { background: var(--brass-soft); color: var(--brass); }
+  .pill.crit { background: color-mix(in srgb, var(--st-recup) 16%, transparent); color: var(--st-recup); }
+  .pill.ok { background: var(--accent-soft); color: var(--accent); }
+  .pill.flat { background: var(--surface-2); color: var(--muted); }
+
+  .field { display: flex; flex-direction: column; gap: .22rem; }
+  .field > label { font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .field input, .field select, .field textarea { width: 100%; padding: .42rem .55rem; background: var(--ground); border: 1px solid var(--rule); border-radius: 4px; font-size: .92rem; }
+  .field textarea { min-height: 4.5rem; resize: vertical; font-family: inherit; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .8rem; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: .8rem; }
+
+  .scroller { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--rule-soft); }
+  thead th { font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--surface-2); border-bottom: 1px solid var(--rule); white-space: nowrap; position: sticky; top: 0; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr.clickable { cursor: pointer; }
+  tbody tr.clickable:hover { background: var(--surface-2); }
+
+  .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: .8rem; }
+  .empty h3 { font-family: var(--serif); font-weight: 400; font-size: 1.4rem; color: var(--ink); }
+
+  /* ---------- tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  .tile { background: var(--surface); padding: .8rem .9rem .9rem; display: flex; flex-direction: column; gap: .12rem; }
+  .tile .k { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .tile .v { font-family: var(--serif); font-size: 1.85rem; line-height: 1.05; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .tile .s { font-size: .76rem; color: var(--muted); }
+  .tile.alert .v { color: var(--st-recup); }
+  .tile.money .v { color: var(--brass); }
+
+  /* ---------- corral ---------- */
+  .corral-wrap { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .corral-head { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; padding: .7rem .9rem; border-bottom: 1px solid var(--rule); background: var(--surface-2); }
+  .corral-head .eyebrow { margin-right: auto; }
+  .corral { padding: 1.4rem 1rem; display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; justify-content: center; background:
+     radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%); }
+  .dot { border: 0; padding: 0; border-radius: 50%; cursor: pointer; position: relative; display: grid; place-items: center;
+         font-family: var(--mono); font-size: .58rem; font-weight: 700; color: #fff; letter-spacing: 0;
+         transition: transform .12s ease, box-shadow .12s ease; }
+  .dot:hover, .dot:focus-visible { transform: scale(1.28); z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,.28); }
+  .dot.comp { box-shadow: 0 0 0 2.5px var(--surface), 0 0 0 4.5px var(--st-comp); }
+  .dot.comp:hover { box-shadow: 0 0 0 2.5px var(--surface), 0 0 0 4.5px var(--st-comp), 0 4px 14px rgba(0,0,0,.28); }
+  .dot.baja { opacity: .4; }
+  .dot.baja::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(45deg, transparent 46%, var(--surface) 46%, var(--surface) 54%, transparent 54%); }
+  .segm { display: flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .segm button { background: var(--surface); border: 0; border-right: 1px solid var(--rule); padding: .25rem .55rem; font-size: .76rem; color: var(--muted); cursor: pointer; }
+  .segm button:last-child { border-right: 0; }
+  .segm button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+  .potreros { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1px; background: var(--rule); }
+  .potrero { background: var(--surface); display: flex; flex-direction: column; }
+  .pot-head { display: flex; align-items: center; gap: .4rem; padding: .5rem .75rem; border-bottom: 1px dashed var(--rule); }
+  .pot-head .sw { width: .6rem; height: .6rem; border-radius: 50%; flex: none; }
+  .pot-t { font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+  .pot-n { font-family: var(--serif); font-size: 1.05rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .pot-d { font-size: .7rem; color: var(--faint); margin-left: auto; text-align: right; }
+  .pot-body { padding: .9rem .75rem 1.1rem; display: flex; flex-wrap: wrap; gap: .45rem; align-content: flex-start; min-height: 4.5rem;
+    background: repeating-linear-gradient(90deg, transparent 0 11px, color-mix(in srgb, var(--rule) 45%, transparent) 11px 12px); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; padding: .7rem .9rem; border-top: 1px solid var(--rule); background: var(--surface-2); font-size: .76rem; color: var(--muted); }
+  .legend .li { display: inline-flex; align-items: center; gap: .35rem; }
+  .legend .sw { width: .7rem; height: .7rem; border-radius: 50%; }
+  .tip { position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: var(--ground); padding: .45rem .6rem; border-radius: 4px; font-size: .78rem; line-height: 1.35; max-width: 15rem; box-shadow: 0 6px 20px rgba(0,0,0,.25); opacity: 0; transition: opacity .1s; }
+  .tip.on { opacity: 1; }
+  .tip b { font-family: var(--serif); font-weight: 400; font-size: .95rem; }
+  .tip .m { font-family: var(--mono); font-size: .66rem; color: var(--brass); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* ---------- lista de caballos ---------- */
+  .filters { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; }
+  .filters select { padding: .32rem .5rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; font-size: .82rem; }
+  .chk { display: inline-flex; align-items: center; gap: .3rem; font-size: .82rem; color: var(--muted); }
+
+  .hlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .8rem; }
+  .hcard { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; box-shadow: var(--shadow); transition: transform .12s ease, border-color .12s; }
+  .hcard:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .hcard .ph { aspect-ratio: 4/3; background: var(--surface-2); position: relative; overflow: hidden; display: grid; place-items: center; }
+  .hcard .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .hcard .ph .noimg { font-family: var(--serif); font-size: 2.2rem; color: var(--faint); }
+  .hcard .ph .badge { position: absolute; left: .5rem; top: .5rem; }
+  .hcard .bd { padding: .65rem .75rem .8rem; display: flex; flex-direction: column; gap: .3rem; }
+  .hcard .nm { font-family: var(--serif); font-size: 1.15rem; line-height: 1.15; }
+  .hcard .mt { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .hcard .ap { font-family: var(--mono); font-size: .68rem; color: var(--brass); }
+
+  /* ---------- ficha ---------- */
+  .ficha-top { display: grid; grid-template-columns: minmax(0,1fr); gap: 1.2rem; }
+  @media (min-width: 46rem) { .ficha-top { grid-template-columns: 20rem minmax(0,1fr); } }
+  .gal { display: flex; flex-direction: column; gap: .5rem; }
+  .gal .main { aspect-ratio: 4/3; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; display: grid; place-items: center; }
+  .gal .main img { width: 100%; height: 100%; object-fit: cover; }
+  .gal .thumbs { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .gal .thumbs button { width: 3.4rem; height: 3.4rem; padding: 0; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--surface-2); cursor: pointer; }
+  .gal .thumbs button[aria-current="true"] { border-color: var(--accent); border-width: 2px; }
+  .gal .thumbs img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ficha-name { font-family: var(--serif); font-weight: 400; font-size: clamp(2rem,5vw,2.9rem); line-height: 1; letter-spacing: -.02em; }
+  .ficha-sub { color: var(--muted); font-size: .95rem; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem,1fr)); gap: .8rem 1.2rem; }
+  .kv .k { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .kv .v { font-size: .95rem; }
+
+  .apt { display: flex; flex-direction: column; gap: .45rem; }
+  .apt .r { display: grid; grid-template-columns: 7.5rem 1fr 1.8rem; gap: .6rem; align-items: center; }
+  .apt .lb { font-size: .85rem; color: var(--ink-soft); }
+  .apt .bar { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+  .apt .bar span { display: block; height: 100%; background: var(--accent); }
+  .apt .n { font-family: var(--mono); font-size: .8rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .score-big { display: flex; align-items: baseline; gap: .4rem; }
+  .score-big .n { font-family: var(--serif); font-size: 2.6rem; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score-big .d { color: var(--muted); font-size: .85rem; }
+
+  .prize { color: var(--brass); font-family: var(--mono); font-size: .72rem; }
+  .price-box { background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); border-radius: 6px; padding: .8rem 1rem; display: flex; flex-direction: column; gap: .15rem; }
+  .price-box .k { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); }
+  .price-box .v { font-family: var(--serif); font-size: 1.9rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+
+  .rel { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .rel a { display: inline-flex; align-items: center; gap: .35rem; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 999px; padding: .2rem .6rem .2rem .3rem; font-size: .82rem; text-decoration: none; color: var(--ink); }
+  .rel a:hover { border-color: var(--accent); }
+  .rel .sw { width: .6rem; height: .6rem; border-radius: 50%; }
+
+  .timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .tl { display: grid; grid-template-columns: 6.2rem minmax(0,1fr) minmax(0,1fr); gap: .3rem .9rem; align-items: baseline;
+        padding: .5rem 0 .5rem 1rem; border-left: 2px solid var(--rule); position: relative; }
+  .tl::before { content: ""; position: absolute; left: -5px; top: .95rem; width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
+  .tl.now { border-left-color: var(--accent); }
+  .tl.now::before { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .tl-f { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+  .tl-r { font-size: .92rem; }
+  .tl-a { color: var(--accent); padding: 0 .15rem; }
+  .tl-m { font-size: .82rem; color: var(--muted); }
+  @media (max-width: 40rem) { .tl { grid-template-columns: 1fr; gap: .1rem; } }
+
+  .alerts { display: flex; flex-direction: column; gap: .4rem; }
+  .alert-row { display: flex; gap: .5rem; align-items: center; padding: .45rem .6rem; border-radius: 4px; background: var(--surface-2); font-size: .87rem; }
+  .alert-row.crit { background: color-mix(in srgb, var(--st-recup) 12%, transparent); }
+  .alert-row.warn { background: var(--brass-soft); }
+
+  /* ---------- form ---------- */
+  .fs { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem; background: var(--surface); display: flex; flex-direction: column; gap: .9rem; }
+  .fs > legend { font-family: var(--mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); padding: 0 .4rem; }
+  .rowset { display: flex; flex-direction: column; gap: .45rem; }
+  .rowset .rw { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem,1fr)) 2rem; gap: .4rem; align-items: end; }
+  .rowset .rw .del { border: 1px solid var(--rule); background: var(--surface); border-radius: 4px; cursor: pointer; height: 2rem; color: var(--muted); }
+  .rowset .rw .del:hover { color: var(--st-recup); border-color: var(--st-recup); }
+  .photos { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .photos .p { position: relative; width: 5rem; height: 5rem; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .photos .p img { width: 100%; height: 100%; object-fit: cover; }
+  .photos .p button { position: absolute; right: .15rem; top: .15rem; width: 1.2rem; height: 1.2rem; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: .7rem; line-height: 1; cursor: pointer; }
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .8rem; }
+  .vfig { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .vfig video { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: #000; }
+
+  .slider-row { display: grid; grid-template-columns: 7.5rem 1fr 1.6rem; gap: .6rem; align-items: center; }
+  .slider-row input[type=range] { width: 100%; accent-color: var(--accent); }
+  .slider-row .n { font-family: var(--mono); font-size: .82rem; text-align: right; }
+
+  .bar-meter { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+  .bar-meter span { display: block; height: 100%; background: var(--accent); }
+  .bar-meter.warn span { background: var(--brass); }
+  .bar-meter.crit span { background: var(--st-recup); }
+
+  .toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(1rem); background: var(--ink); color: var(--ground); padding: .55rem 1rem; border-radius: 5px; font-size: .87rem; box-shadow: 0 8px 24px rgba(0,0,0,.3); opacity: 0; transition: all .18s ease; z-index: 80; }
+  .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .aviso { background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 40%, transparent);
+           border-left-width: 3px; border-radius: 5px; padding: .7rem .9rem; font-size: .88rem; color: var(--ink-soft); }
+  .aviso strong { color: var(--brass); }
+
+  .note { font-size: .8rem; color: var(--muted); }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  .login-wrap { min-height: 65vh; display: grid; place-items: center; padding: 1rem 0; }
+  .login-box { width: 100%; max-width: 24rem; }
+  .sin-sesion .top .search, .sin-sesion .top .cur-toggle, .sin-sesion .top > .top-in > .btn, .sin-sesion .tabs { display: none; }
+  .rol-limitado .cost { display: none !important; }
+  .rol-limitado #tabs a[href="#/finanzas"] { display: none; }
+
+  @media print {
+    .top, .tabs, .no-print { display: none !important; }
+    body { background: #fff; color: #000; }
+    main { padding: 0; max-width: none; }
+    .card, .fs { box-shadow: none; border-color: #bbb; break-inside: avoid; }
+    .cost { display: none !important; }
+  }
+</style>
+
+<header class="top no-print">
+  <div class="top-in">
+    <div class="brand"><b>El Corral</b><span>Establo de Matías</span></div>
+    <div class="search">
+      <span class="ico" aria-hidden="true">⌕</span>
+      <input id="q" type="search" placeholder="Buscar por nombre, año, madre, ubicación…" aria-label="Buscar caballos">
+      <kbd>/</kbd>
+    </div>
+    <div class="cur-toggle" role="group" aria-label="Moneda">
+      <button type="button" data-cur="USD">USD</button>
+      <button type="button" data-cur="ARS">ARS</button>
+    </div>
+    <a class="btn primary" href="#/nuevo">+ Caballo</a>
+  </div>
+</header>
+
+<nav class="tabs no-print">
+  <div class="tabs-in" id="tabs">
+    <a href="#/tablero">Tablero</a>
+    <a href="#/corral">Corral</a>
+    <a href="#/caballos">Caballos</a>
+    <a href="#/temporadas">Temporadas</a>
+    <a href="#/movimientos">Movimientos</a>
+    <a href="#/crias">Crías y pedigrí</a>
+    <a href="#/sanidad">Sanidad</a>
+    <a href="#/finanzas">Finanzas</a>
+    <a href="#/memoria">Memoria</a>
+    <a href="#/datos">Datos</a>
+  </div>
+</nav>
+
+<main id="app"></main>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ============ constantes de dominio ============ */
+
+  var SUPA_URL = "https://bnhrszhtbnlizqgiijxn.supabase.co";
+  var SUPA_KEY = "sb_publishable_gZQOaVxheA8Z2cprGwdYSA_MPzV8Z8Q";
+  var sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  var ESTADOS = [
+    { id: "competicion", label: "Competición",   color: "var(--st-comp)",     desc: "Juega torneos esta temporada" },
+    { id: "juego",       label: "En juego",      color: "var(--st-juego)",    desc: "Trabajando y disponible" },
+    { id: "preparacion", label: "Preparación",   color: "var(--st-prep)",     desc: "Potro, doma o primer año" },
+    { id: "recuperacion",label: "Recuperación",  color: "var(--st-recup)",    desc: "Lesionada o en reposo" },
+    { id: "vientre",     label: "Vientre / haras", color: "var(--st-vientre)",desc: "Madre en el haras" },
+    { id: "prestada",    label: "Prestada",      color: "var(--st-prestada)", desc: "En otro establecimiento" },
+    { id: "retirada",    label: "Retirada",      color: "var(--st-retirada)", desc: "Ya no juega, sigue en el campo" },
+    { id: "baja",        label: "Fallecida / vendida", color: "var(--st-baja)", desc: "Fuera del conjunto" }
+  ];
+
+  var RUBROS = ["Alimentación", "Veterinaria", "Herrería", "Pensión / campo", "Transporte", "Personal", "Seguro", "Torneos", "Reproducción", "Otros"];
+  var APTITUDES = [
+    { id: "velocidad", label: "Velocidad" },
+    { id: "boca", label: "Boca" },
+    { id: "freno", label: "Freno y giro" },
+    { id: "temperamento", label: "Temperamento" },
+    { id: "resistencia", label: "Resistencia" },
+    { id: "recuperacion", label: "Recuperación" }
+  ];
+  var SEXOS = ["Yegua", "Padrillo", "Castrado", "Potranca", "Potrillo"];
+  var HEMBRAS = ["Yegua", "Potranca"];
+
+  /* ============ estado ============ */
+
+  var db = defaults();
+  var sesion = { listo: false, user: null, perfil: null, org: null };
+  var ultimaCarga = 0;
+  var ui = { q: "", cur: "USD", galIdx: 0, corralModo: "estado", moviendo: null, editandoTemp: null, filtros: { estado: "", ubicacion: "", sexo: "", incluirBajas: false } };
+
+  function defaults() {
+    var fx = 1000;
+    try { fx = Number(localStorage.getItem("elcorral.fx")) || 1000; } catch (e) {}
+    return { horses: [], temporadas: [], settings: { fx: fx, moneda: "USD" }, fichasPublicas: {}, equipo: [], v: 3 };
+  }
+
+  function save() { return true; }
+
+  /* ============ utilidades ============ */
+
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function norm(s) {
+    return String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  function uid() { return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function rndId() { return Math.random(); }
+  function hoy() { return new Date().toISOString().slice(0, 10); }
+
+  function toast(msg) {
+    var t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(t._t);
+    t._t = setTimeout(function () { t.classList.remove("on"); }, 3200);
+  }
+
+  function estado(id) {
+    for (var i = 0; i < ESTADOS.length; i++) if (ESTADOS[i].id === id) return ESTADOS[i];
+    return ESTADOS[1];
+  }
+
+  function edad(h) {
+    if (!h.nacimiento) return null;
+    var n = new Date(h.nacimiento);
+    if (isNaN(n)) return null;
+    var fin = h.fechaBaja ? new Date(h.fechaBaja) : new Date();
+    var a = fin.getFullYear() - n.getFullYear();
+    var m = fin.getMonth() - n.getMonth();
+    if (m < 0 || (m === 0 && fin.getDate() < n.getDate())) a--;
+    return a < 0 ? 0 : a;
+  }
+
+  function edadTxt(h) {
+    var e = edad(h);
+    if (e === null) return "edad s/d";
+    return e + (e === 1 ? " año" : " años") + (h.fechaBaja ? " (al momento de la baja)" : "");
+  }
+
+  function diasDesde(f) {
+    if (!f) return null;
+    var d = new Date(f);
+    if (isNaN(d)) return null;
+    return Math.floor((Date.now() - d.getTime()) / 86400000);
+  }
+
+  function fmtFecha(f) {
+    if (!f) return "—";
+    var p = String(f).split("-");
+    if (p.length !== 3) return f;
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+
+  function aUSD(monto, moneda) {
+    var m = Number(monto) || 0;
+    if (moneda === "ARS") return db.settings.fx > 0 ? m / db.settings.fx : 0;
+    return m;
+  }
+
+  function money(monto, moneda) {
+    var usd = aUSD(monto, moneda);
+    var val = ui.cur === "ARS" ? usd * (Number(db.settings.fx) || 0) : usd;
+    var s = Math.round(val).toLocaleString("es-AR");
+    return (ui.cur === "ARS" ? "$ " : "US$ ") + s;
+  }
+
+  function gastoTotalUSD(h) {
+    return (h.gastos || []).reduce(function (a, g) { return a + aUSD(g.monto, g.moneda); }, 0);
+  }
+  function ingresoTotalUSD(h) {
+    return (h.ingresos || []).reduce(function (a, g) { return a + aUSD(g.monto, g.moneda); }, 0);
+  }
+  function invertidoUSD(h) {
+    return aUSD(h.costoMonto, h.costoMoneda) + gastoTotalUSD(h);
+  }
+
+  function promedioApt(h) {
+    var vals = [];
+    APTITUDES.forEach(function (a) {
+      var v = h.aptitudes && h.aptitudes[a.id];
+      if (v) vals.push(Number(v));
+    });
+    if (!vals.length) return null;
+    return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+  }
+
+  function activos() { return db.horses.filter(function (h) { return h.estado !== "baja"; }); }
+
+  function alertas(h) {
+    var out = [];
+    if (h.estado === "baja") return out;
+    var dv = diasDesde(h.vacunaFecha);
+    if (h.vacunaFecha == null || h.vacunaFecha === "") out.push({ n: "crit", t: "Sin registro de vacunación" });
+    else if (dv > 365) out.push({ n: "crit", t: "Vacunación vencida (hace " + dv + " días)" });
+    else if (dv > 320) out.push({ n: "warn", t: "Vacunación por vencer" });
+
+    var dc = diasDesde(h.cogginsFecha);
+    if (dc !== null && dc > 180) out.push({ n: "crit", t: "Coggins vencido — no puede viajar" });
+    else if (dc !== null && dc > 150) out.push({ n: "warn", t: "Coggins por vencer" });
+
+    var dh = diasDesde(h.herrajeFecha);
+    if (dh !== null && dh > 45 && h.estado !== "vientre" && h.estado !== "retirada") out.push({ n: "warn", t: "Herraje atrasado (" + dh + " días)" });
+
+    if (h.estado === "recuperacion") out.push({ n: "crit", t: "En recuperación" + (h.altaEstimada ? " — alta estimada " + fmtFecha(h.altaEstimada) : "") });
+    if (h.reproductivo === "prenada" && h.fechaParto) {
+      var dp = diasDesde(h.fechaParto);
+      if (dp !== null && dp > -45 && dp < 0) out.push({ n: "warn", t: "Parto próximo: " + fmtFecha(h.fechaParto) });
+    }
+    return out;
+  }
+
+  /* ============ búsqueda ============ */
+
+  function buscar(lista, q) {
+    var t = norm(q).trim();
+    if (!t) return lista;
+    var terms = t.split(/\s+/);
+    return lista.filter(function (h) {
+      var blob = norm([
+        h.nombre, h.apodo, h.sexo, h.pelaje, h.ubicacion, h.petisero, h.jinete,
+        h.padre, h.madre, h.criador, h.microchip, h.notas, estado(h.estado).label,
+        (h.nacimiento || "").slice(0, 4),
+        (h.torneos || []).map(function (x) { return x.torneo + " " + x.jugador + " " + x.premio; }).join(" ")
+      ].join(" "));
+      return terms.every(function (tt) { return blob.indexOf(tt) !== -1; });
+    });
+  }
+
+  function filtrar(lista) {
+    var f = ui.filtros;
+    return lista.filter(function (h) {
+      if (!f.incluirBajas && h.estado === "baja" && f.estado !== "baja") return false;
+      if (f.estado && h.estado !== f.estado) return false;
+      if (f.ubicacion && h.ubicacion !== f.ubicacion) return false;
+      if (f.sexo && h.sexo !== f.sexo) return false;
+      return true;
+    });
+  }
+
+  function ubicaciones() {
+    var s = {};
+    db.horses.forEach(function (h) { if (h.ubicacion) s[h.ubicacion] = 1; });
+    return Object.keys(s).sort();
+  }
+
+  function porNombre(nombre) {
+    if (!nombre) return null;
+    var n = norm(nombre);
+    for (var i = 0; i < db.horses.length; i++) if (norm(db.horses[i].nombre) === n) return db.horses[i];
+    return null;
+  }
+
+  function hijos(h) {
+    var n = norm(h.nombre);
+    if (!n) return [];
+    return db.horses.filter(function (x) { return x.id !== h.id && (norm(x.madre) === n || norm(x.padre) === n); });
+  }
+
+  /* ============ fotos ============ */
+
+  function leerFoto(file, cb) {
+    var fr = new FileReader();
+    fr.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var max = 620;
+        var w = img.width, hh = img.height;
+        if (w > hh && w > max) { hh = Math.round(hh * max / w); w = max; }
+        else if (hh >= w && hh > max) { w = Math.round(w * max / hh); hh = max; }
+        var c = document.createElement("canvas");
+        c.width = w; c.height = hh;
+        c.getContext("2d").drawImage(img, 0, 0, w, hh);
+        cb(c.toDataURL("image/jpeg", 0.72));
+      };
+      img.onerror = function () { toast("No se pudo leer esa imagen."); };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+
+  /* ============ capa de datos (Supabase) ============ */
+
+  function errorDatos(e, contexto) {
+    var msg = (e && (e.message || e.error_description)) || "revisá la conexión";
+    if (e && e.code === "23505") msg = "ya existe un caballo con ese nombre en el criadero";
+    toast((contexto || "No se pudo guardar") + ": " + msg + ".");
+  }
+
+  var RUBRO_APP_A_DB = { "Pensión / campo": "Pensión/campo" };
+  var RUBRO_DB_A_APP = { "Pensión/campo": "Pensión / campo" };
+
+  var CAMPOS = [
+    ["nombre","nombre"],["apodo","apodo"],["sexo","sexo"],["nacimiento","nacimiento"],["pelaje","pelaje"],
+    ["estado","estado"],["reproductivo","reproductivo"],["ubicacion","ubicacion"],["petisero","petisero"],
+    ["jinete","jinete"],["criador","criador"],["microchip","microchip"],["origen","origen"],
+    ["observacionesFisicas","observaciones"],["historialClinico","historial_clinico"],["notas","notas"],["video","video_link"],
+    ["vacunaFecha","vacuna_fecha"],["cogginsFecha","coggins_fecha"],["herrajeFecha","herraje_fecha"],
+    ["desparasitacionFecha","desparasitacion_fecha"],["odontologiaFecha","odontologia_fecha"],["altaEstimada","alta_estimada"],
+    ["servicio","servicio"],["receptora","receptora"],["fechaParto","fecha_parto"],
+    ["fechaBaja","fecha_baja"],["motivoBaja","causa_baja"]
+  ];
+  var MONTOS = [
+    ["costoMonto","costo_monto","costoMoneda","costo_moneda"],
+    ["valuacion","valuacion","valuacionMoneda","valuacion_moneda"],
+    ["precioVenta","precio_venta","precioMoneda","precio_moneda"],
+    ["seguroSuma","seguro_suma","seguroMoneda","seguro_moneda"]
+  ];
+
+  function filaAcaballo(r) {
+    var h = { id: r.id, fotos: [], fotosMeta: [], videos: [], torneos: [], gastos: [], ingresos: [], movimientos: [], aptitudes: r.aptitudes || {} };
+    CAMPOS.forEach(function (c) { h[c[0]] = r[c[1]] == null ? "" : r[c[1]]; });
+    MONTOS.forEach(function (m) {
+      h[m[0]] = r[m[1]] == null ? "" : Number(r[m[1]]);
+      h[m[2]] = r[m[3]] || "USD";
+    });
+    h._padreId = r.padre_id; h._madreId = r.madre_id;
+    h.padre = r.padre_texto || ""; h.madre = r.madre_texto || "";
+    return h;
+  }
+
+  function caballoAfila(h) {
+    var r = { organizacion_id: sesion.perfil.organizacion_id, aptitudes: h.aptitudes || {} };
+    CAMPOS.forEach(function (c) { r[c[1]] = h[c[0]] === "" || h[c[0]] == null ? null : h[c[0]]; });
+    MONTOS.forEach(function (m) {
+      r[m[1]] = h[m[0]] === "" || h[m[0]] == null ? null : h[m[0]];
+      r[m[3]] = h[m[2]] || "USD";
+    });
+    if (!r.estado) r.estado = "juego";
+    if (r.reproductivo == null) r.reproductivo = "";
+    if (r.origen == null) r.origen = "";
+    var madre = porNombre(h.madre), padre = porNombre(h.padre);
+    r.madre_id = madre && madre.id !== h.id ? madre.id : null;
+    r.padre_id = padre && padre.id !== h.id ? padre.id : null;
+    r.madre_texto = r.madre_id ? null : (h.madre || null);
+    r.padre_texto = r.padre_id ? null : (h.padre || null);
+    return r;
+  }
+
+  function cargarTodo() {
+    return Promise.all([
+      sb.from("caballos").select("*").order("nombre"),
+      sb.from("gastos").select("*").order("fecha"),
+      sb.from("ingresos").select("*").order("fecha"),
+      sb.from("torneos_caballo").select("*"),
+      sb.from("movimientos").select("*").order("fecha"),
+      sb.from("temporadas").select("*"),
+      sb.from("temporada_caballos").select("*"),
+      sb.from("fotos").select("*").order("orden"),
+      sb.from("videos").select("*").order("fecha"),
+      sb.from("fichas_publicas").select("*"),
+      sb.from("perfiles").select("*")
+    ]).then(function (rs) {
+      var conError = rs.filter(function (r) { return r.error; })[0];
+      if (conError) throw conError.error;
+      var porId = {};
+      db.horses = (rs[0].data || []).map(function (r) { var h = filaAcaballo(r); porId[h.id] = h; return h; });
+      db.horses.forEach(function (h) {
+        if (h._madreId && porId[h._madreId]) h.madre = porId[h._madreId].nombre;
+        if (h._padreId && porId[h._padreId]) h.padre = porId[h._padreId].nombre;
+      });
+      (rs[1].data || []).forEach(function (g) { var h = porId[g.caballo_id]; if (h) h.gastos.push({ fecha: g.fecha, rubro: RUBRO_DB_A_APP[g.rubro] || g.rubro, detalle: g.detalle || "", monto: Number(g.monto), moneda: g.moneda }); });
+      (rs[2].data || []).forEach(function (g) { var h = porId[g.caballo_id]; if (h) h.ingresos.push({ fecha: g.fecha, rubro: g.rubro, detalle: g.detalle || "", monto: Number(g.monto), moneda: g.moneda }); });
+      (rs[3].data || []).forEach(function (x) { var h = porId[x.caballo_id]; if (h) h.torneos.push({ anio: x.anio || "", torneo: x.torneo || "", jugador: x.jugador || "", chukkers: x.chukkers || "", premio: x.premio || "" }); });
+      (rs[4].data || []).forEach(function (m) { var h = porId[m.caballo_id]; if (h) h.movimientos.push({ fecha: m.fecha, desde: m.desde || "", hasta: m.hacia || "", motivo: m.motivo || "", transporte: m.transporte || "" }); });
+      var tPorId = {};
+      db.temporadas = (rs[5].data || []).map(function (t) {
+        var x = { id: t.id, nombre: t.nombre, sede: t.sede || "", desde: t.desde || "", hasta: t.hasta || "", notas: t.notas || "", caballos: [] };
+        tPorId[t.id] = x; return x;
+      });
+      (rs[6].data || []).forEach(function (tc) { if (tPorId[tc.temporada_id]) tPorId[tc.temporada_id].caballos.push(tc.caballo_id); });
+      (rs[8].data || []).forEach(function (v) { var h = porId[v.caballo_id]; if (h) h.videos.push({ id: v.id, path: v.storage_path, nombre: v.hito || "", fecha: v.fecha || "" }); });
+      db.fichasPublicas = {};
+      (rs[9].data || []).forEach(function (f) { db.fichasPublicas[f.caballo_id] = f; });
+      db.equipo = rs[10].data || [];
+      ultimaCarga = Date.now();
+      var fotosRows = (rs[7].data || []).filter(function (f) { return porId[f.caballo_id]; });
+      if (!fotosRows.length) return;
+      return sb.storage.from("fotos").createSignedUrls(fotosRows.map(function (f) { return f.storage_path; }), 86400).then(function (su) {
+        if (su.error || !su.data) return;
+        fotosRows.forEach(function (f, i) {
+          var h = porId[f.caballo_id];
+          var url = su.data[i] && su.data[i].signedUrl;
+          if (url) { h.fotos.push(url); h.fotosMeta.push({ id: f.id, path: f.storage_path }); }
+        });
+      });
+    });
+  }
+
+  function mesesDeEdad(h) {
+    if (!h.nacimiento) return null;
+    var n = new Date(h.nacimiento);
+    if (isNaN(n)) return null;
+    var d = new Date();
+    return Math.max(0, (d.getFullYear() - n.getFullYear()) * 12 + d.getMonth() - n.getMonth());
+  }
+
+  function repoSincronizarMedios(h) {
+    var oid = sesion.perfil.organizacion_id;
+    var tareas = [], subidas = [];
+
+    var prevF = draft._prevFotosMeta || [];
+    var quedanF = {};
+    (h.fotosMeta || []).forEach(function (m) { if (m) quedanF[m.id] = 1; });
+    var borrarF = prevF.filter(function (m) { return !quedanF[m.id]; });
+    if (borrarF.length) {
+      tareas.push(sb.storage.from("fotos").remove(borrarF.map(function (m) { return m.path; })));
+      tareas.push(sb.from("fotos").delete().in("id", borrarF.map(function (m) { return m.id; })));
+    }
+    (h.fotosMeta || []).forEach(function (m, i) {
+      if (m) tareas.push(sb.from("fotos").update({ orden: i }).eq("id", m.id));
+    });
+    (h.fotos || []).forEach(function (src, i) {
+      if (h.fotosMeta[i]) return;
+      subidas.push(function () {
+        return fetch(src).then(function (r) { return r.blob(); }).then(function (blob) {
+          var path = oid + "/" + h.id + "/" + uid() + ".jpg";
+          return sb.storage.from("fotos").upload(path, blob, { contentType: "image/jpeg" }).then(function (r) {
+            if (r.error) throw r.error;
+            return sb.from("fotos").insert({ organizacion_id: oid, caballo_id: h.id, storage_path: path, orden: i });
+          });
+        });
+      });
+    });
+
+    var prevV = draft._prevVideos || [];
+    var quedanV = {};
+    (h.videos || []).forEach(function (v) { if (v.id) quedanV[v.id] = 1; });
+    var borrarV = prevV.filter(function (v) { return v.id && !quedanV[v.id]; });
+    if (borrarV.length) {
+      tareas.push(sb.storage.from("videos").remove(borrarV.map(function (v) { return v.path; })));
+      tareas.push(sb.from("videos").delete().in("id", borrarV.map(function (v) { return v.id; })));
+    }
+    (h.videos || []).forEach(function (v) {
+      if (!v.blob) return;
+      subidas.push(function () {
+        var ext = ((v.blob.type || "video/mp4").split("/")[1] || "mp4").split(";")[0];
+        var path = oid + "/" + h.id + "/" + uid() + "." + ext;
+        return sb.storage.from("videos").upload(path, v.blob, { contentType: v.blob.type || "video/mp4" }).then(function (r) {
+          if (r.error) throw r.error;
+          return sb.from("videos").insert({
+            organizacion_id: oid, caballo_id: h.id, storage_path: path, fecha: hoy(),
+            edad_meses_al_momento: mesesDeEdad(h), hito: v.nombre || null, created_by: sesion.user.id
+          });
+        });
+      });
+    });
+
+    return Promise.all(tareas).then(function () {
+      return subidas.reduce(function (pr, fn) { return pr.then(fn); }, Promise.resolve());
+    });
+  }
+
+  function repoGuardarCaballo(nuevo, esNuevo) {
+    var fila = caballoAfila(nuevo);
+    var paso = esNuevo
+      ? sb.from("caballos").insert(fila).select("id").single().then(function (r) { if (r.error) throw r.error; nuevo.id = r.data.id; })
+      : sb.from("caballos").update(fila).eq("id", nuevo.id).then(function (r) { if (r.error) throw r.error; });
+    return paso.then(function () {
+      var oid = sesion.perfil.organizacion_id;
+      var limpiar = esNuevo ? Promise.resolve([]) : Promise.all([
+        sb.from("gastos").delete().eq("caballo_id", nuevo.id),
+        sb.from("ingresos").delete().eq("caballo_id", nuevo.id),
+        sb.from("torneos_caballo").delete().eq("caballo_id", nuevo.id)
+      ]);
+      return limpiar.then(function () {
+        var ins = [];
+        if (nuevo.gastos.length) ins.push(sb.from("gastos").insert(nuevo.gastos.map(function (g) {
+          return { organizacion_id: oid, caballo_id: nuevo.id, fecha: g.fecha || hoy(), rubro: RUBRO_APP_A_DB[g.rubro] || g.rubro || "Otros", detalle: g.detalle || null, monto: Number(g.monto), moneda: g.moneda || "USD" };
+        })));
+        if (nuevo.ingresos.length) ins.push(sb.from("ingresos").insert(nuevo.ingresos.map(function (g) {
+          return { organizacion_id: oid, caballo_id: nuevo.id, fecha: g.fecha || hoy(), rubro: g.rubro || "Otros", detalle: g.detalle || null, monto: Number(g.monto), moneda: g.moneda || "USD" };
+        })));
+        if (nuevo.torneos.length) ins.push(sb.from("torneos_caballo").insert(nuevo.torneos.map(function (x) {
+          return { organizacion_id: oid, caballo_id: nuevo.id, anio: x.anio ? Number(x.anio) : null, torneo: x.torneo || null, jugador: x.jugador || null, chukkers: x.chukkers ? Number(x.chukkers) : null, premio: x.premio || null };
+        })));
+        if (nuevo._movNuevo) {
+          var mv = nuevo._movNuevo;
+          delete nuevo._movNuevo;
+          ins.push(sb.from("movimientos").insert({ organizacion_id: oid, caballo_id: nuevo.id, fecha: mv.fecha, desde: mv.desde || null, hacia: mv.hasta || null, motivo: mv.motivo || null, transporte: mv.transporte || null }));
+        }
+        return Promise.all(ins).then(function (rr) {
+          var e = rr.filter(function (x) { return x.error; })[0];
+          if (e) throw e.error;
+        });
+      });
+    }).then(function () { return repoSincronizarMedios(nuevo); });
+  }
+
+  function repoRefrescarMedios(h) {
+    return Promise.all([
+      sb.from("fotos").select("*").eq("caballo_id", h.id).order("orden"),
+      sb.from("videos").select("*").eq("caballo_id", h.id).order("fecha")
+    ]).then(function (rs) {
+      h.videos = (rs[1].data || []).map(function (v) { return { id: v.id, path: v.storage_path, nombre: v.hito || "", fecha: v.fecha || "" }; });
+      var rows = rs[0].data || [];
+      h.fotos = []; h.fotosMeta = [];
+      if (!rows.length) return;
+      return sb.storage.from("fotos").createSignedUrls(rows.map(function (f) { return f.storage_path; }), 86400).then(function (su) {
+        rows.forEach(function (f, i) {
+          var url = su.data && su.data[i] && su.data[i].signedUrl;
+          if (url) { h.fotos.push(url); h.fotosMeta.push({ id: f.id, path: f.storage_path }); }
+        });
+      });
+    });
+  }
+
+  function repoMover(h, mov) {
+    var oid = sesion.perfil.organizacion_id;
+    return Promise.all([
+      sb.from("movimientos").insert({ organizacion_id: oid, caballo_id: h.id, fecha: mov.fecha, desde: mov.desde || null, hacia: mov.hasta || null, motivo: mov.motivo || null, transporte: mov.transporte || null }),
+      sb.from("caballos").update({ ubicacion: h.ubicacion }).eq("id", h.id)
+    ]).then(function (rr) {
+      var e = rr.filter(function (x) { return x.error; })[0];
+      if (e) throw e.error;
+    });
+  }
+
+  function repoEliminarCaballo(h) {
+    var pf = (h.fotosMeta || []).map(function (m) { return m.path; });
+    var pv = (h.videos || []).filter(function (v) { return v.path; }).map(function (v) { return v.path; });
+    var tareas = [];
+    if (pf.length) tareas.push(sb.storage.from("fotos").remove(pf));
+    if (pv.length) tareas.push(sb.storage.from("videos").remove(pv));
+    return Promise.all(tareas).then(function () {
+      return sb.from("caballos").delete().eq("id", h.id).then(function (r) { if (r.error) throw r.error; });
+    });
+  }
+
+  function linkFicha(slug) {
+    return location.origin + location.pathname + "#/f/" + slug;
+  }
+
+  /* ---------- sesión ---------- */
+
+  function iniciar() {
+    sb.auth.getSession().then(function (r) {
+      var ses = r.data && r.data.session;
+      sesion.listo = true;
+      if (!ses) { sesion.user = null; render(); return; }
+      sesion.user = ses.user;
+      return cargarPerfil();
+    }).catch(function (e) { sesion.listo = true; render(); errorDatos(e, "No pude conectar con el servidor"); });
+  }
+
+  function cargarPerfil() {
+    return sb.from("perfiles").select("*").eq("user_id", sesion.user.id).maybeSingle().then(function (r) {
+      if (r.error) throw r.error;
+      sesion.perfil = r.data || null;
+      if (!sesion.perfil) { render(); return; }
+      return sb.from("organizaciones").select("*").maybeSingle().then(function (ro) {
+        sesion.org = ro.data || null;
+        return cargarTodo().then(render);
+      });
+    });
+  }
+
+  function traducirAuth(m) {
+    if (/invalid login/i.test(m)) return "Correo o contraseña incorrectos.";
+    if (/not confirmed/i.test(m)) return "Falta confirmar el correo: revisá tu casilla y tocá el enlace.";
+    if (/at least 6/i.test(m)) return "La contraseña tiene que tener al menos 6 caracteres.";
+    if (/already registered/i.test(m)) return "Ese correo ya tiene cuenta: usá Entrar.";
+    return m;
+  }
+
+  /* ---------- hidratación de videos (URLs firmadas) ---------- */
+
+  function hidratarVideos() {
+    $$("video[data-vpath]").forEach(function (el) {
+      var path = el.dataset.vpath;
+      if (!path || el.src) return;
+      sb.storage.from("videos").createSignedUrl(path, 3600).then(function (r) {
+        if (r.data && r.data.signedUrl) el.src = r.data.signedUrl;
+      });
+    });
+  }
+
+  /* ============ componentes ============ */
+  /* ============ componentes ============ */
+
+  function pillEstado(h) {
+    var e = estado(h.estado);
+    return '<span class="pill" style="background:color-mix(in srgb,' + e.color + ' 15%,transparent);color:' + e.color + '">' +
+      '<span class="dotc"></span>' + esc(e.label) + "</span>";
+  }
+
+  function letraRepro(h) {
+    if (HEMBRAS.indexOf(h.sexo) === -1) return "";
+    if (h.reproductivo === "prenada") return "P";
+    if (h.reproductivo === "vacia") return "V";
+    return "";
+  }
+
+  function tamPorEdad(h) {
+    var e = edad(h);
+    if (e === null) return 20;
+    if (e <= 2) return 15;
+    if (e <= 4) return 19;
+    if (e <= 8) return 25;
+    if (e <= 13) return 23;
+    return 19;
+  }
+
+  function fotoDe(h) { return (h.fotos && h.fotos[0]) || ""; }
+
+  function cardCaballo(h) {
+    var f = fotoDe(h);
+    var ap = promedioApt(h);
+    return '<a class="hcard" href="#/caballo/' + h.id + '">' +
+      '<div class="ph">' +
+        (f ? '<img src="' + f + '" alt="' + esc(h.nombre) + '">' : '<span class="noimg">' + esc((h.nombre || "?").slice(0, 1).toUpperCase()) + "</span>") +
+        '<span class="badge">' + pillEstado(h) + "</span>" +
+      "</div>" +
+      '<div class="bd">' +
+        '<span class="nm">' + esc(h.nombre || "Sin nombre") + (letraRepro(h) ? ' <span class="mono" style="font-size:.7rem;color:var(--st-vientre)">' + letraRepro(h) + "</span>" : "") + "</span>" +
+        '<span class="mt">' + esc(h.sexo || "—") + " · " + esc(edadTxt(h)) + (h.ubicacion ? " · " + esc(h.ubicacion) : "") + "</span>" +
+        (ap ? '<span class="ap">Físico ' + ap.toFixed(1) + "/10</span>" : "") +
+      "</div></a>";
+  }
+
+  /* ============ vistas ============ */
+
+  function vTablero() {
+    var act = activos();
+    if (!db.horses.length) return vBienvenida();
+
+    var porEstado = {};
+    ESTADOS.forEach(function (e) { porEstado[e.id] = 0; });
+    db.horses.forEach(function (h) { porEstado[h.estado] = (porEstado[h.estado] || 0) + 1; });
+
+    var conAlerta = act.filter(function (h) { return alertas(h).some(function (a) { return a.n === "crit"; }); });
+    var prenadas = act.filter(function (h) { return h.reproductivo === "prenada"; });
+    var valorUSD = act.reduce(function (a, h) { return a + aUSD(h.valuacion, h.valuacionMoneda); }, 0);
+    var invUSD = db.horses.reduce(function (a, h) { return a + invertidoUSD(h); }, 0);
+    var aseguradoUSD = act.reduce(function (a, h) { return a + aUSD(h.seguroSuma, h.seguroMoneda); }, 0);
+    var cobertura = valorUSD > 0 ? Math.min(100, Math.round(aseguradoUSD / valorUSD * 100)) : 0;
+
+    var proximos = act.map(function (h) { return { h: h, d: diasDesde(h.herrajeFecha) }; })
+      .filter(function (x) { return x.d !== null && x.d >= 30; })
+      .sort(function (a, b) { return b.d - a.d; }).slice(0, 8);
+
+    var html = '<section class="stack">' +
+      '<div class="h-sec"><div><p class="eyebrow">Tablero general</p><h2>' + act.length + ' caballos activos</h2></div>' +
+      '<p class="sub">' + db.horses.length + " fichas en total · " + (porEstado.baja || 0) + " dados de baja</p></div>" +
+      '<div class="tiles">' +
+        tile("Competición", porEstado.competicion || 0, "Juegan torneos esta temporada") +
+        tile("En juego", porEstado.juego || 0, "Trabajando y disponibles") +
+        tile("Preparación", porEstado.preparacion || 0, "Potros, doma y primer año") +
+        tile("Recuperación", porEstado.recuperacion || 0, "En reposo o tratamiento", "alert") +
+        tile("Preñadas", prenadas.length, "De " + act.filter(function (h) { return HEMBRAS.indexOf(h.sexo) > -1; }).length + " hembras") +
+        tile("Requieren atención", conAlerta.length, "Vencimientos y lesiones", conAlerta.length ? "alert" : "") +
+      "</div>";
+
+    html += '<div class="grid2">' +
+      '<div class="card pad stack cost"><p class="eyebrow">Valor del conjunto</p>' +
+        '<div class="score-big"><span class="n" style="color:var(--brass)">' + money(valorUSD, "USD") + "</span></div>" +
+        '<p class="note">Suma de las valuaciones cargadas. Asegurado: ' + money(aseguradoUSD, "USD") + " (" + cobertura + '%)</p>' +
+        '<div class="bar-meter ' + (cobertura < 60 ? "crit" : cobertura < 85 ? "warn" : "") + '"><span style="width:' + cobertura + '%"></span></div>' +
+        '<p class="note">Invertido acumulado (compra + gastos cargados): <strong>' + money(invUSD, "USD") + "</strong></p></div>" +
+      '<div class="card pad stack"><p class="eyebrow">Requieren atención</p>' +
+        (conAlerta.length ? '<div class="alerts">' + conAlerta.slice(0, 6).map(function (h) {
+            var a = alertas(h).filter(function (x) { return x.n === "crit"; })[0];
+            return '<a class="alert-row crit" href="#/caballo/' + h.id + '" style="text-decoration:none;color:inherit"><strong>' + esc(h.nombre) + "</strong><span>" + esc(a.t) + "</span></a>";
+          }).join("") + "</div>" +
+          (conAlerta.length > 6 ? '<p class="note">y ' + (conAlerta.length - 6) + " más — ver Sanidad</p>" : "")
+          : '<p class="sub">Todo al día. Ningún vencimiento crítico.</p>') +
+      "</div></div>";
+
+    if (proximos.length) {
+      html += '<div class="card"><div class="pad" style="padding-bottom:.4rem"><p class="eyebrow">Herrería — los más atrasados</p></div>' +
+        '<div class="scroller"><table><thead><tr><th>Caballo</th><th>Último herraje</th><th class="num">Días</th><th>Ubicación</th></tr></thead><tbody>' +
+        proximos.map(function (x) {
+          return '<tr class="clickable" data-go="#/caballo/' + x.h.id + '"><td>' + esc(x.h.nombre) + "</td><td>" + fmtFecha(x.h.herrajeFecha) +
+            '</td><td class="num">' + x.d + "</td><td>" + esc(x.h.ubicacion || "—") + "</td></tr>";
+        }).join("") + "</tbody></table></div></div>";
+    }
+
+    html += "</section>";
+    return html;
+  }
+
+  function tile(k, v, s, cls) {
+    return '<div class="tile ' + (cls || "") + '"><span class="k">' + esc(k) + '</span><span class="v">' + v + '</span><span class="s">' + esc(s) + "</span></div>";
+  }
+
+  function vLogin() {
+    return '<section class="login-wrap"><div class="card pad stack login-box">' +
+      '<div class="brand" style="margin:0"><b>El Corral</b><span>Establo compartido</span></div>' +
+      '<p class="sub">Entrá con tu correo. Todos los del criadero ven los mismos caballos, desde cualquier dispositivo.</p>' +
+      '<div class="field"><label for="lg-email">Correo</label><input id="lg-email" type="email" autocomplete="username"></div>' +
+      '<div class="field"><label for="lg-pass">Contraseña</label><input id="lg-pass" type="password" autocomplete="current-password"></div>' +
+      '<div class="row"><button class="btn primary" id="lg-entrar">Entrar</button><button class="btn" id="lg-crear">Crear cuenta</button></div>' +
+      '<p class="note">Si creás una cuenta nueva te llega un correo para confirmarla; después entrás con tu contraseña.</p>' +
+      "</div></section>";
+  }
+
+  function vOnboarding() {
+    return '<section class="login-wrap"><div class="card pad stack login-box">' +
+      '<p class="eyebrow">Último paso</p>' +
+      '<h2 style="font-family:var(--serif);font-weight:400;font-size:1.5rem">¿Criadero nuevo, o te sumás a uno que ya existe?</h2>' +
+      '<div class="field"><label for="ob-nombre">Tu nombre</label><input id="ob-nombre" placeholder="Como te conocen en el establo"></div>' +
+      '<div class="field"><label for="ob-org">Nombre del criadero (si es nuevo)</label><input id="ob-org" placeholder="Aguará"></div>' +
+      '<button class="btn primary" id="ob-crear">Crear el criadero y ser el dueño</button>' +
+      '<div class="field" style="margin-top:.5rem"><label for="ob-codigo">O código de invitación</label><input id="ob-codigo" class="mono" placeholder="lo tiene el dueño, en Datos"></div>' +
+      '<button class="btn" id="ob-unirse">Unirme con el código</button>' +
+      "</div></section>";
+  }
+
+  function vFichaPublica(slug) {
+    var app = $("#app");
+    app.innerHTML = '<section class="card pad"><div class="empty"><h3>Buscando la ficha…</h3></div></section>';
+    sb.rpc("ficha_publica", { p_slug: slug }).then(function (r) {
+      if (r.error || !r.data) {
+        app.innerHTML = '<section class="card pad"><div class="empty"><h3>Esta ficha no está disponible</h3>' +
+          '<p class="sub">El link puede estar apagado o mal copiado.</p></div></section>';
+        return;
+      }
+      sb.rpc("ficha_publica_visita", { p_slug: slug }).then(function () {}, function () {});
+      var c = r.data;
+      var vals = [];
+      APTITUDES.forEach(function (a) { var v = c.aptitudes && c.aptitudes[a.id]; if (v) vals.push(Number(v)); });
+      var prom = vals.length ? vals.reduce(function (x, y) { return x + y; }, 0) / vals.length : null;
+      var edadTexto = "";
+      if (c.nacimiento) {
+        var e = new Date().getFullYear() - Number(String(c.nacimiento).slice(0, 4));
+        edadTexto = e + (e === 1 ? " año" : " años");
+      }
+
+      var html = '<section class="stack" style="max-width:52rem;margin:0 auto">' +
+        '<div><p class="eyebrow">Ficha de presentación</p>' +
+        '<h1 class="ficha-name">' + esc(c.nombre) + "</h1>" +
+        '<p class="ficha-sub">' + esc([c.apodo ? "“" + c.apodo + "”" : "", c.sexo, edadTexto, c.pelaje].filter(Boolean).join(" · ")) + "</p></div>";
+
+      if ((c.fotos || []).length) {
+        html += '<div class="vgrid">' + c.fotos.map(function (p) {
+          return '<img data-fp-path="' + esc(p) + '" alt="' + esc(c.nombre) + '" style="width:100%;border-radius:6px;background:var(--surface-2);aspect-ratio:4/3;object-fit:cover">';
+        }).join("") + "</div>";
+      }
+      if (c.precio_venta) {
+        var pv = Math.round(Number(c.precio_venta)).toLocaleString("es-AR");
+        html += '<div class="price-box"><span class="k">Precio pedido</span><span class="v">' + (c.precio_moneda === "ARS" ? "$ " : "US$ ") + pv + "</span></div>";
+      }
+      html += '<div class="card pad stack"><p class="eyebrow">Datos</p><div class="kv">' +
+        '<div><div class="k">Nacimiento</div><div class="v">' + esc(fmtFecha(c.nacimiento)) + "</div></div>" +
+        '<div><div class="k">Criador</div><div class="v">' + esc(c.criador || "—") + "</div></div>" +
+        '<div><div class="k">Padre</div><div class="v">' + esc(c.padre || "—") + "</div></div>" +
+        '<div><div class="k">Madre</div><div class="v">' + esc(c.madre || "—") + "</div></div>" +
+      "</div></div>";
+      if (prom) {
+        html += '<div class="card pad stack"><div class="row"><p class="eyebrow grow">Puntaje físico</p>' +
+          '<div class="score-big"><span class="n">' + prom.toFixed(1) + '</span><span class="d">promedio</span></div></div><div class="apt">' +
+          APTITUDES.map(function (a) {
+            var v = (c.aptitudes && c.aptitudes[a.id]) || 0;
+            if (!v) return "";
+            return '<div class="r"><span class="lb">' + esc(a.label) + '</span><span class="bar"><span style="width:' + (v * 10) + '%"></span></span><span class="n">' + v + "</span></div>";
+          }).join("") + "</div>" + (c.observaciones ? '<p class="sub">' + esc(c.observaciones) + "</p>" : "") + "</div>";
+      }
+      if ((c.torneos || []).length) {
+        html += '<div class="card"><div class="pad" style="padding-bottom:.5rem"><p class="eyebrow">Historial deportivo</p></div>' +
+          '<div class="scroller"><table><thead><tr><th>Año</th><th>Torneo</th><th>Jugador</th><th class="num">Chukkers</th><th>Resultado</th></tr></thead><tbody>' +
+          c.torneos.map(function (t) {
+            return "<tr><td class='tnum'>" + esc(t.anio || "—") + "</td><td>" + esc(t.torneo || "—") + "</td><td>" + esc(t.jugador || "—") +
+              '</td><td class="num">' + esc(t.chukkers || "—") + "</td><td>" + (t.premio ? '<span class="prize">★ ' + esc(t.premio) + "</span>" : "—") + "</td></tr>";
+          }).join("") + "</tbody></table></div></div>";
+      }
+      if ((c.videos || []).length) {
+        html += '<div class="card pad stack"><p class="eyebrow">Videos</p><div class="vgrid">' +
+          c.videos.map(function (v) {
+            return '<figure class="vfig"><video controls preload="metadata" playsinline data-fp-vpath="' + esc(v.path) + '"></video>' +
+              (v.hito ? '<figcaption class="note">' + esc(v.hito) + "</figcaption>" : "") + "</figure>";
+          }).join("") + "</div></div>";
+      }
+      if (c.video_link) html += '<a class="btn" href="' + esc(c.video_link) + '" target="_blank" rel="noopener" style="align-self:flex-start">▶ Ver video de juego</a>';
+      html += '<p class="note" style="text-align:center;padding:1rem 0">Ficha generada con El Corral</p></section>';
+      app.innerHTML = html;
+
+      $$("img[data-fp-path]").forEach(function (el) {
+        sb.storage.from("fotos").download(el.dataset.fpPath).then(function (rr) {
+          if (rr.data) el.src = URL.createObjectURL(rr.data);
+        });
+      });
+      $$("video[data-fp-vpath]").forEach(function (el) {
+        sb.storage.from("videos").download(el.dataset.fpVpath).then(function (rr) {
+          if (rr.data) el.src = URL.createObjectURL(rr.data);
+        });
+      });
+    });
+  }
+
+  function vBienvenida() {
+    return '<section class="card pad"><div class="empty">' +
+      "<h3>Todavía no hay caballos cargados</h3>" +
+      '<p class="sub" style="max-width:32rem">Arrancá con el primero: con el nombre alcanza, todo lo demás se completa después.</p>' +
+      '<a class="btn primary" href="#/nuevo">Cargar el primer caballo</a>' +
+      "</div></section>";
+  }
+
+  function vCorral() {
+    if (!db.horses.length) return vBienvenida();
+    var lista = buscar(db.horses, ui.q).filter(function (h) {
+      var f = ui.filtros;
+      if (f.ubicacion && h.ubicacion !== f.ubicacion) return false;
+      if (f.sexo && h.sexo !== f.sexo) return false;
+      return true;
+    });
+    lista = lista.slice().sort(function (a, b) {
+      var ea = edad(a), eb = edad(b);
+      return (eb === null ? -1 : eb) - (ea === null ? -1 : ea);
+    });
+
+    function dot(h) {
+      var e = estado(h.estado);
+      var s = tamPorEdad(h);
+      var l = letraRepro(h);
+      return '<button class="dot' + (h.estado === "competicion" ? " comp" : "") + (h.estado === "baja" ? " baja" : "") + '"' +
+        ' style="width:' + s + "px;height:" + s + "px;background:" + e.color + '"' +
+        ' data-id="' + h.id + '" data-tip="' + esc(h.nombre) + "|" + esc(e.label) + "|" + esc(edadTxt(h)) + "|" + esc(h.ubicacion || "sin ubicación") + '"' +
+        ' aria-label="' + esc(h.nombre + ", " + e.label + ", " + edadTxt(h)) + '">' + (s >= 19 ? l : "") + "</button>";
+    }
+
+    var cuerpo;
+    if (!lista.length) {
+      cuerpo = '<div class="corral"><p class="sub">Ningún caballo coincide con la búsqueda.</p></div>';
+    } else if (ui.corralModo === "junto") {
+      cuerpo = '<div class="corral">' + lista.map(dot).join("") + "</div>";
+    } else {
+      var grupos = ui.corralModo === "ubicacion"
+        ? ubicaciones().concat([""]).map(function (u) {
+            return { label: u || "Sin ubicación", color: "var(--faint)", items: lista.filter(function (h) { return (h.ubicacion || "") === u; }) };
+          })
+        : ESTADOS.map(function (e) {
+            return { label: e.label, color: e.color, items: lista.filter(function (h) { return h.estado === e.id; }), desc: e.desc };
+          });
+      grupos = grupos.filter(function (g) { return g.items.length; });
+      cuerpo = '<div class="potreros">' + grupos.map(function (g) {
+        return '<div class="potrero"><div class="pot-head"><span class="sw" style="background:' + g.color + '"></span>' +
+          '<span class="pot-t">' + esc(g.label) + '</span><span class="pot-n">' + g.items.length + "</span>" +
+          (g.desc ? '<span class="pot-d">' + esc(g.desc) + "</span>" : "") + "</div>" +
+          '<div class="pot-body">' + g.items.map(dot).join("") + "</div></div>";
+      }).join("") + "</div>";
+    }
+
+    var leyenda = ESTADOS.map(function (e) {
+      var n = lista.filter(function (h) { return h.estado === e.id; }).length;
+      if (!n) return "";
+      return '<span class="li"><span class="sw" style="background:' + e.color + '"></span>' + esc(e.label) + " <span class='mono'>" + n + "</span></span>";
+    }).join("");
+
+    return '<section class="stack">' +
+      '<div class="h-sec"><div><p class="eyebrow">Vista de corral</p><h2>' + lista.length + " caballos en pantalla</h2></div>" +
+      '<p class="sub">Cada punto es un caballo. El tamaño es la edad, el color el estado.</p></div>' +
+      '<div class="corral-wrap">' +
+        '<div class="corral-head">' +
+          '<span class="eyebrow">' + (ui.q ? 'Filtrado por "' + esc(ui.q) + '"' : "Todo el conjunto") + "</span>" +
+          '<div class="segm" role="group" aria-label="Agrupar el corral">' +
+            segBtn("estado", "Por estado") + segBtn("ubicacion", "Por ubicación") + segBtn("junto", "Todo junto") +
+          "</div>" +
+          '<span class="pill flat">P = preñada</span><span class="pill flat">V = vacía</span>' +
+          '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">◎ anillo dorado = competición</span>' +
+        "</div>" +
+        cuerpo +
+        '<div class="legend">' + leyenda +
+          '<span class="li" style="margin-left:auto">Tamaño del punto: <span class="sw" style="width:.45rem;height:.45rem;background:var(--faint)"></span> potrillo →' +
+          ' <span class="sw" style="width:.95rem;height:.95rem;background:var(--faint)"></span> en plenitud</span>' +
+        "</div>" +
+      "</div>" +
+      '<p class="note">Tocá un punto para abrir la ficha del caballo. Los fallecidos y vendidos aparecen tachados y en gris.</p>' +
+    "</section>";
+  }
+
+  function vCaballos() {
+    if (!db.horses.length) return vBienvenida();
+    var base = buscar(db.horses, ui.q);
+    var lista = filtrar(base).slice().sort(function (a, b) { return norm(a.nombre).localeCompare(norm(b.nombre)); });
+    var f = ui.filtros;
+
+    var html = '<section class="stack">' +
+      '<div class="h-sec"><div><p class="eyebrow">Todos los caballos</p><h2>' + lista.length + " de " + db.horses.length + "</h2></div>" +
+      '<div class="filters no-print">' +
+        selEl("f-estado", "Estado", [""].concat(ESTADOS.map(function (e) { return e.id; })), f.estado, function (v) { return v ? estado(v).label : "Todos los estados"; }) +
+        selEl("f-ubic", "Ubicación", [""].concat(ubicaciones()), f.ubicacion, function (v) { return v || "Todas las ubicaciones"; }) +
+        selEl("f-sexo", "Sexo", [""].concat(SEXOS), f.sexo, function (v) { return v || "Todos"; }) +
+        '<label class="chk"><input type="checkbox" id="f-bajas"' + (f.incluirBajas ? " checked" : "") + "> Incluir fallecidos y vendidos</label>" +
+        '<button class="btn sm" id="f-clear">Limpiar</button>' +
+      "</div></div>";
+
+    html += lista.length ? '<div class="hlist">' + lista.map(cardCaballo).join("") + "</div>"
+      : '<div class="card"><div class="empty"><h3>Sin resultados</h3><p class="sub">Probá con otro nombre, un año de nacimiento o el nombre de la madre.</p></div></div>';
+
+    return html + "</section>";
+  }
+
+  function segBtn(modo, label) {
+    return '<button type="button" data-modo="' + modo + '" aria-pressed="' + (ui.corralModo === modo) + '">' + esc(label) + "</button>";
+  }
+
+  function selEl(id, label, vals, cur, fmt) {
+    return '<select id="' + id + '" aria-label="' + esc(label) + '">' + vals.map(function (v) {
+      return '<option value="' + esc(v) + '"' + (v === cur ? " selected" : "") + ">" + esc(fmt(v)) + "</option>";
+    }).join("") + "</select>";
+  }
+
+  function vCrias() {
+    if (!db.horses.length) return vBienvenida();
+    var madres = db.horses.filter(function (h) { return hijos(h).length > 0; })
+      .sort(function (a, b) { return hijos(b).length - hijos(a).length; });
+    var prenadas = activos().filter(function (h) { return h.reproductivo === "prenada"; })
+      .sort(function (a, b) { return String(a.fechaParto || "9999").localeCompare(String(b.fechaParto || "9999")); });
+
+    var html = '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Reproducción</p><h2>Crías y pedigrí</h2></div>' +
+      '<p class="sub">Las relaciones se arman solas: si en un caballo cargás el nombre exacto de la madre o el padre, aparece acá.</p></div>';
+
+    html += '<div class="card"><div class="pad" style="padding-bottom:.5rem"><p class="eyebrow">Preñadas y próximos partos — ' + prenadas.length + "</p></div>";
+    html += prenadas.length ? '<div class="scroller"><table><thead><tr><th>Yegua</th><th>Servicio</th><th>Parto estimado</th><th>Receptora</th><th>Ubicación</th></tr></thead><tbody>' +
+      prenadas.map(function (h) {
+        return '<tr class="clickable" data-go="#/caballo/' + h.id + '"><td>' + esc(h.nombre) + "</td><td>" + esc(h.servicio || "—") + "</td><td>" + fmtFecha(h.fechaParto) +
+          "</td><td>" + esc(h.receptora || "—") + "</td><td>" + esc(h.ubicacion || "—") + "</td></tr>";
+      }).join("") + "</tbody></table></div>" : '<div class="pad"><p class="sub">Ninguna yegua marcada como preñada.</p></div>';
+    html += "</div>";
+
+    html += '<div class="card"><div class="pad" style="padding-bottom:.5rem"><p class="eyebrow">Vientres con producción — ' + madres.length + "</p></div>";
+    if (!madres.length) {
+      html += '<div class="pad"><p class="sub">Todavía no hay descendencia cargada. Escribí el nombre de la madre en la ficha de cada cría.</p></div>';
+    } else {
+      html += '<div class="pad stack">' + madres.map(function (m) {
+        var hs = hijos(m);
+        return '<div style="display:flex;flex-direction:column;gap:.4rem;padding-bottom:.7rem;border-bottom:1px solid var(--rule-soft)">' +
+          '<div class="row"><a href="#/caballo/' + m.id + '" style="font-family:var(--serif);font-size:1.1rem;text-decoration:none">' + esc(m.nombre) + "</a>" +
+          pillEstado(m) + '<span class="note">' + hs.length + (hs.length === 1 ? " producto" : " productos") + "</span></div>" +
+          '<div class="rel">' + hs.map(function (x) {
+            return '<a href="#/caballo/' + x.id + '"><span class="sw" style="background:' + estado(x.estado).color + '"></span>' + esc(x.nombre) +
+              ' <span class="note tnum">' + (x.nacimiento ? x.nacimiento.slice(0, 4) : "—") + "</span></a>";
+          }).join("") + "</div></div>";
+      }).join("") + "</div>";
+    }
+    html += "</div></section>";
+    return html;
+  }
+
+  function vSanidad() {
+    if (!db.horses.length) return vBienvenida();
+    var filas = activos().map(function (h) { return { h: h, a: alertas(h) }; })
+      .filter(function (x) { return x.a.length; })
+      .sort(function (x, y) {
+        var cx = x.a.filter(function (a) { return a.n === "crit"; }).length;
+        var cy = y.a.filter(function (a) { return a.n === "crit"; }).length;
+        return cy - cx;
+      });
+
+    return '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Sanidad</p><h2>Vencimientos y estado clínico</h2></div>' +
+      '<p class="sub">Vacunación anual, Coggins a 6 meses, herraje a 45 días.</p></div>' +
+      '<div class="card">' +
+      (filas.length ? '<div class="scroller"><table><thead><tr><th>Caballo</th><th>Estado</th><th>Alertas</th><th>Vacuna</th><th>Coggins</th><th>Herraje</th></tr></thead><tbody>' +
+        filas.map(function (x) {
+          return '<tr class="clickable" data-go="#/caballo/' + x.h.id + '"><td><strong>' + esc(x.h.nombre) + "</strong></td><td>" + pillEstado(x.h) + "</td>" +
+            "<td>" + x.a.map(function (a) { return '<span class="pill ' + (a.n === "crit" ? "crit" : "warn") + '">' + esc(a.t) + "</span>"; }).join(" ") + "</td>" +
+            "<td>" + fmtFecha(x.h.vacunaFecha) + "</td><td>" + fmtFecha(x.h.cogginsFecha) + "</td><td>" + fmtFecha(x.h.herrajeFecha) + "</td></tr>";
+        }).join("") + "</tbody></table></div>"
+        : '<div class="empty"><h3>Todo al día</h3><p class="sub">Ningún caballo con vencimientos ni lesiones activas.</p></div>') +
+      "</div></section>";
+  }
+
+  function vFinanzas() {
+    if (!db.horses.length) return vBienvenida();
+    var lista = db.horses.slice().sort(function (a, b) { return invertidoUSD(b) - invertidoUSD(a); });
+    var totInv = lista.reduce(function (a, h) { return a + invertidoUSD(h); }, 0);
+    var totIng = lista.reduce(function (a, h) { return a + ingresoTotalUSD(h); }, 0);
+    var totVal = activos().reduce(function (a, h) { return a + aUSD(h.valuacion, h.valuacionMoneda); }, 0);
+
+    var porRubro = {};
+    db.horses.forEach(function (h) {
+      (h.gastos || []).forEach(function (g) {
+        porRubro[g.rubro || "Otros"] = (porRubro[g.rubro || "Otros"] || 0) + aUSD(g.monto, g.moneda);
+      });
+    });
+    var rubros = Object.keys(porRubro).sort(function (a, b) { return porRubro[b] - porRubro[a]; });
+    var maxR = rubros.length ? porRubro[rubros[0]] : 1;
+
+    var html = '<section class="stack cost"><div class="h-sec"><div><p class="eyebrow">Finanzas</p><h2>Costo y valor por caballo</h2></div>' +
+      '<div class="row"><span class="note">Cotización USD → ARS</span><input id="fx" type="number" min="1" step="1" value="' + (db.settings.fx || 1000) + '" style="width:6.5rem;padding:.3rem .5rem;background:var(--surface);border:1px solid var(--rule);border-radius:4px" aria-label="Cotización"></div></div>';
+
+    html += '<div class="tiles">' +
+      tile("Invertido total", money(totInv, "USD"), "Compra + gastos cargados", "money") +
+      tile("Ingresos", money(totIng, "USD"), "Ventas, alquileres y premios", "money") +
+      tile("Valor del conjunto", money(totVal, "USD"), "Suma de valuaciones", "money") +
+      tile("Patrimonio neto", money(totIng + totVal - totInv, "USD"), "Valor + ingresos − invertido", "money") +
+    "</div>";
+
+    if (rubros.length) {
+      html += '<div class="card pad stack"><p class="eyebrow">Gasto por rubro</p>' +
+        rubros.map(function (r) {
+          return '<div class="apt"><div class="r"><span class="lb">' + esc(r) + '</span><span class="bar"><span style="width:' +
+            Math.round(porRubro[r] / maxR * 100) + '%;background:var(--brass)"></span></span><span class="n" style="width:auto;min-width:5rem">' + money(porRubro[r], "USD") + "</span></div></div>";
+        }).join("") + "</div>";
+    }
+
+    html += '<div class="card"><div class="scroller"><table><thead><tr><th>Caballo</th><th>Estado</th><th class="num">Compra</th><th class="num">Gastos</th><th class="num">Invertido</th><th class="num">Valuación</th><th class="num">Ingresos</th><th class="num">Neto</th></tr></thead><tbody>' +
+      lista.map(function (h) {
+        var inv = invertidoUSD(h), ing = ingresoTotalUSD(h);
+        var res = h.estado === "baja" ? ing - inv : ing + aUSD(h.valuacion, h.valuacionMoneda) - inv;
+        return '<tr class="clickable" data-go="#/caballo/' + h.id + '"><td><strong>' + esc(h.nombre) + "</strong></td><td>" + pillEstado(h) + "</td>" +
+          '<td class="num">' + money(h.costoMonto, h.costoMoneda) + '</td><td class="num">' + money(gastoTotalUSD(h), "USD") + '</td>' +
+          '<td class="num">' + money(inv, "USD") + '</td><td class="num">' + money(h.valuacion, h.valuacionMoneda) + '</td>' +
+          '<td class="num">' + money(ing, "USD") + '</td><td class="num" style="color:' + (res >= 0 ? "var(--st-juego)" : "var(--st-recup)") + '">' + money(res, "USD") + "</td></tr>";
+      }).join("") + "</tbody></table></div></div>" +
+      '<p class="note">Los importes se cargan en la moneda de la operación; la conversión usa la cotización de arriba. <strong>Neto</strong> es valuación más ingresos menos lo invertido — en los caballos dados de baja, solo lo que efectivamente entró menos lo invertido.</p>' +
+      "</section>";
+    return html;
+  }
+
+  function vMemoria() {
+    var bajas = db.horses.filter(function (h) { return h.estado === "baja"; })
+      .sort(function (a, b) { return String(b.fechaBaja || "").localeCompare(String(a.fechaBaja || "")); });
+
+    return '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Archivo</p><h2>Memoria del establo</h2></div>' +
+      '<p class="sub">Los caballos que ya no están, con su historia completa. Nada se borra.</p></div>' +
+      (bajas.length ? '<div class="hlist">' + bajas.map(cardCaballo).join("") + "</div>"
+        : '<div class="card"><div class="empty"><h3>No hay caballos dados de baja</h3><p class="sub">Cuando un caballo se vende o fallece, cambiás su estado a “Fallecida / vendida” y queda archivado acá con toda su ficha.</p></div></div>') +
+      "</section>";
+  }
+
+  /* ---------- temporadas ---------- */
+
+  function puedeViajar(h) {
+    var d = diasDesde(h.cogginsFecha);
+    if (h.cogginsFecha == null || h.cogginsFecha === "") return { ok: false, t: "Sin Coggins" };
+    if (d > 180) return { ok: false, t: "Coggins vencido" };
+    if (d > 150) return { ok: true, aviso: true, t: "Coggins vence pronto" };
+    return { ok: true, t: "Papeles al día" };
+  }
+
+  function formTemporada(t) {
+    t = t || { nombre: "", sede: "", desde: hoy(), hasta: "", notas: "" };
+    return '<div class="card pad stack no-print" style="border-color:var(--accent)">' +
+      '<p class="eyebrow">' + (t.id ? "Editar temporada" : "Nueva temporada") + "</p>" +
+      '<div class="grid2">' +
+        '<div class="field"><label>Nombre *</label><input id="tp-nombre" value="' + esc(t.nombre) + '" placeholder="Abierto de Tortugas"></div>' +
+        '<div class="field"><label>Sede o lugar</label><input id="tp-sede" value="' + esc(t.sede || "") + '" placeholder="Tortugas Country Club"></div>' +
+        '<div class="field"><label>Desde</label><input id="tp-desde" type="date" value="' + esc(t.desde || "") + '"></div>' +
+        '<div class="field"><label>Hasta</label><input id="tp-hasta" type="date" value="' + esc(t.hasta || "") + '"></div>' +
+      "</div>" +
+      '<div class="field"><label>Notas</label><textarea id="tp-notas">' + esc(t.notas || "") + "</textarea></div>" +
+      '<div class="row"><button class="btn primary" id="tp-ok">' + (t.id ? "Guardar cambios" : "Crear temporada") + "</button>" +
+      '<button class="btn" id="tp-cancel">Cancelar</button></div></div>';
+  }
+
+  function vTemporadas() {
+    var ts = db.temporadas.slice().sort(function (a, b) { return String(b.desde || "").localeCompare(String(a.desde || "")); });
+
+    var html = '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Temporadas y torneos</p><h2>' +
+      (ts.length ? ts.length + (ts.length === 1 ? " temporada armada" : " temporadas armadas") : "Armar una temporada") + "</h2></div>" +
+      '<button class="btn primary" id="nueva-temp">+ Nueva temporada</button></div>' +
+      '<p class="sub" style="max-width:44rem">Una temporada es la lista de caballos que viajan a un torneo o a una sede. Al armarla, el sistema avisa cuáles no pueden viajar porque tienen el Coggins vencido.</p>';
+
+    if (ui.editandoTemp === "nueva") html += formTemporada(null);
+
+    if (!ts.length && ui.editandoTemp !== "nueva") {
+      html += '<div class="card"><div class="empty"><h3>Todavía no armaste ninguna</h3>' +
+        '<p class="sub" style="max-width:30rem">Por ejemplo: “Abierto de Tortugas”, “Temporada Palermo” o “Verano en Uruguay”. Le agregás los caballos que viajan y queda la lista lista para el camión.</p>' +
+        '<button class="btn primary" id="nueva-temp2">Armar la primera temporada</button></div></div>';
+      return html + "</section>";
+    }
+
+    html += '<div class="hlist">' + ts.map(function (t) {
+      var cab = (t.caballos || []).map(idHorse).filter(Boolean);
+      var problemas = cab.filter(function (h) { return !puedeViajar(h).ok; }).length;
+      var valor = cab.reduce(function (a, h) { return a + aUSD(h.valuacion, h.valuacionMoneda); }, 0);
+      return '<a class="hcard" href="#/temporada/' + t.id + '" style="padding:0">' +
+        '<div class="bd" style="padding:.9rem 1rem 1rem;gap:.45rem">' +
+          '<span class="eyebrow">' + esc(t.sede || "Sin sede") + "</span>" +
+          '<span class="nm">' + esc(t.nombre) + "</span>" +
+          '<span class="mt">' + fmtFecha(t.desde) + " → " + fmtFecha(t.hasta) + "</span>" +
+          '<div class="row" style="gap:.35rem;margin-top:.2rem"><span class="pill flat">' + cab.length + " caballos</span>" +
+          (problemas ? '<span class="pill crit">' + problemas + " sin papeles</span>" : '<span class="pill ok">Papeles al día</span>') + "</div>" +
+          '<span class="ap cost">' + money(valor, "USD") + " en pista</span>" +
+        "</div></a>";
+    }).join("") + "</div>";
+
+    return html + "</section>";
+  }
+
+  function idHorse(id) {
+    for (var i = 0; i < db.horses.length; i++) if (db.horses[i].id === id) return db.horses[i];
+    return null;
+  }
+
+  function vTemporada(id) {
+    var t = db.temporadas.filter(function (x) { return x.id === id; })[0];
+    if (!t) return '<section class="card"><div class="empty"><h3>Esa temporada ya no está</h3><a class="btn" href="#/temporadas">Volver</a></div></section>';
+
+    var cab = (t.caballos || []).map(idHorse).filter(Boolean)
+      .sort(function (a, b) { return norm(a.nombre).localeCompare(norm(b.nombre)); });
+    var problemas = cab.filter(function (h) { return !puedeViajar(h).ok; });
+    var valor = cab.reduce(function (a, h) { return a + aUSD(h.valuacion, h.valuacionMoneda); }, 0);
+
+    var html = '<section class="stack">' +
+      '<div class="row no-print"><a class="btn sm" href="#/temporadas">← Temporadas</a><span class="grow"></span>' +
+      '<button class="btn sm" id="print">Imprimir lista</button>' +
+      '<button class="btn sm" id="edit-temp">Editar datos</button>' +
+      '<button class="btn sm danger" id="del-temp">Eliminar</button></div>' +
+      '<div class="h-sec"><div><p class="eyebrow">' + esc(t.sede || "Temporada") + " · " + fmtFecha(t.desde) + " → " + fmtFecha(t.hasta) + "</p>" +
+      '<h2 style="font-size:clamp(1.8rem,4vw,2.5rem)">' + esc(t.nombre) + "</h2></div></div>";
+
+    if (ui.editandoTemp === t.id) html += formTemporada(t);
+
+    html += '<div class="tiles">' +
+      tile("Caballos en la lista", cab.length, "Van a viajar") +
+      tile("Sin papeles para viajar", problemas.length, "Coggins vencido o sin cargar", problemas.length ? "alert" : "") +
+      tile("Valor en pista", money(valor, "USD"), "Suma de valuaciones", "money") +
+      tile("Edad promedio", cab.length ? (cab.reduce(function (a, h) { return a + (edad(h) || 0); }, 0) / cab.length).toFixed(1) : "—", "Años") +
+    "</div>";
+
+    if (problemas.length) {
+      html += '<div class="card pad stack"><p class="eyebrow" style="color:var(--st-recup)">No pueden subir al camión</p><div class="alerts">' +
+        problemas.map(function (h) {
+          return '<a class="alert-row crit" href="#/caballo/' + h.id + '" style="text-decoration:none;color:inherit"><strong>' + esc(h.nombre) + "</strong><span>" + esc(puedeViajar(h).t) + "</span></a>";
+        }).join("") + "</div></div>";
+    }
+
+    html += '<div class="card"><div class="pad" style="padding-bottom:.5rem"><div class="row"><p class="eyebrow grow">Lista de viaje</p>' +
+      '<button class="btn sm no-print" id="add-cab">+ Agregar caballos</button></div></div>';
+
+    html += cab.length ? '<div class="scroller"><table><thead><tr><th>Caballo</th><th>Estado</th><th>Edad</th><th>Petisero</th><th>Ubicación hoy</th><th>Papeles</th><th class="no-print"></th></tr></thead><tbody>' +
+      cab.map(function (h) {
+        var p = puedeViajar(h);
+        return '<tr><td><a href="#/caballo/' + h.id + '" style="text-decoration:none"><strong>' + esc(h.nombre) + "</strong></a></td><td>" + pillEstado(h) + "</td>" +
+          "<td class='tnum'>" + (edad(h) === null ? "—" : edad(h)) + "</td><td>" + esc(h.petisero || "—") + "</td><td>" + esc(h.ubicacion || "—") + "</td>" +
+          '<td><span class="pill ' + (p.ok ? (p.aviso ? "warn" : "ok") : "crit") + '">' + esc(p.t) + "</span></td>" +
+          '<td class="no-print"><button class="btn sm" data-quitar="' + h.id + '" data-temp="' + t.id + '">Sacar</button></td></tr>';
+      }).join("") + "</tbody></table></div>"
+      : '<div class="empty"><h3>La lista está vacía</h3><p class="sub">Agregá los caballos que viajan a esta temporada.</p></div>';
+
+    html += "</div>";
+    if (t.notas) html += '<div class="card pad stack"><p class="eyebrow">Notas</p><p style="white-space:pre-wrap">' + esc(t.notas) + "</p></div>";
+    return html + "</section>";
+  }
+
+  function vPickerCaballos(tempId) {
+    var t = db.temporadas.filter(function (x) { return x.id === tempId; })[0];
+    if (!t) return "";
+    var ya = t.caballos || [];
+    var lista = buscar(activos(), ui.q).sort(function (a, b) { return norm(a.nombre).localeCompare(norm(b.nombre)); });
+    return '<section class="stack"><div class="row no-print"><a class="btn sm" href="#/temporada/' + t.id + '">← ' + esc(t.nombre) + "</a></div>" +
+      '<div class="h-sec"><div><p class="eyebrow">Armar la lista</p><h2>Elegí los caballos que viajan</h2></div>' +
+      '<p class="sub">Usá el buscador de arriba para filtrar. Se guardan solos al tildarlos.</p></div>' +
+      '<div class="card"><div class="scroller"><table><thead><tr><th style="width:3rem"></th><th>Caballo</th><th>Estado</th><th>Edad</th><th>Ubicación</th><th>Papeles</th></tr></thead><tbody>' +
+      lista.map(function (h) {
+        var p = puedeViajar(h);
+        return "<tr><td><input type='checkbox' data-pick='" + h.id + "' data-temp='" + t.id + "'" + (ya.indexOf(h.id) > -1 ? " checked" : "") + "></td>" +
+          "<td><strong>" + esc(h.nombre) + "</strong></td><td>" + pillEstado(h) + "</td><td class='tnum'>" + (edad(h) === null ? "—" : edad(h)) +
+          "</td><td>" + esc(h.ubicacion || "—") + '</td><td><span class="pill ' + (p.ok ? (p.aviso ? "warn" : "ok") : "crit") + '">' + esc(p.t) + "</span></td></tr>";
+      }).join("") + "</tbody></table></div></div></section>";
+  }
+
+  /* ---------- movimientos ---------- */
+
+  function todosMovimientos() {
+    var out = [];
+    db.horses.forEach(function (h) {
+      (h.movimientos || []).forEach(function (m) { out.push({ h: h, m: m }); });
+    });
+    return out.sort(function (a, b) { return String(b.m.fecha || "").localeCompare(String(a.m.fecha || "")); });
+  }
+
+  function vMovimientos() {
+    if (!db.horses.length) return vBienvenida();
+    var todos = todosMovimientos();
+    var f = buscar(db.horses, ui.q);
+    var ids = {};
+    f.forEach(function (h) { ids[h.id] = 1; });
+    var movs = ui.q ? todos.filter(function (x) { return ids[x.h.id]; }) : todos;
+
+    return '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Logística</p><h2>Registro de movimientos</h2></div>' +
+      '<p class="sub">Cada traslado queda asentado. La ubicación anterior no se pisa.</p></div>' +
+      '<div class="card">' +
+      (movs.length ? '<div class="scroller"><table><thead><tr><th>Fecha</th><th>Caballo</th><th>Desde</th><th>Hasta</th><th>Motivo</th><th>Transporte</th></tr></thead><tbody>' +
+        movs.slice(0, 300).map(function (x) {
+          return '<tr class="clickable" data-go="#/caballo/' + x.h.id + '"><td class="tnum">' + fmtFecha(x.m.fecha) + "</td>" +
+            "<td><strong>" + esc(x.h.nombre) + "</strong></td><td>" + esc(x.m.desde || "—") +
+            '</td><td><span style="color:var(--accent);font-weight:600">' + esc(x.m.hasta || "—") + "</span></td><td>" + esc(x.m.motivo || "—") +
+            "</td><td>" + esc(x.m.transporte || "—") + "</td></tr>";
+        }).join("") + "</tbody></table></div>" +
+        (movs.length > 300 ? '<div class="pad"><p class="note">Mostrando los 300 más recientes de ' + movs.length + ".</p></div>" : "")
+        : '<div class="empty"><h3>Sin movimientos registrados</h3><p class="sub">Desde la ficha de cualquier caballo, con el botón “Mover”, queda asentado el traslado.</p></div>') +
+      "</div></section>";
+  }
+
+  function vDatos() {
+    var org = sesion.org || {};
+    var equipo = db.equipo || [];
+    var NOMBRE_ROL = { dueno: "Dueño", petisero: "Petisero", veterinario: "Veterinario" };
+    var soyDueno = sesion.perfil.rol === "dueno";
+
+    return '<section class="stack"><div class="h-sec"><div><p class="eyebrow">Datos del criadero</p><h2>' + esc(org.nombre || "Criadero") + "</h2></div>" +
+      '<div class="row"><span class="note">' + esc(sesion.user.email || "") + '</span><button class="btn sm" id="salir">Salir</button></div></div>' +
+      '<div class="grid2">' +
+      '<div class="card pad stack"><p class="eyebrow">Invitar al equipo</p>' +
+        '<p class="sub">Pasale este código a quien quieras sumar. Crea su cuenta, elige “Unirme con el código” y entra a este criadero como petisero (el rol se cambia acá abajo).</p>' +
+        '<div class="row"><span class="mono" style="font-size:1.35rem;letter-spacing:.18em">' + esc(org.codigo_invita || "—") + "</span>" +
+        '<button class="btn sm" data-copiar="' + esc(org.codigo_invita || "") + '">Copiar</button></div></div>' +
+      '<div class="card pad stack"><p class="eyebrow">Equipo — ' + equipo.length + '</p><div class="stack" style="gap:.45rem">' +
+        equipo.map(function (pf) {
+          return '<div class="row"><strong class="grow">' + esc(pf.nombre || "Sin nombre") + (pf.user_id === sesion.user.id ? ' <span class="note">(vos)</span>' : "") + "</strong>" +
+            (soyDueno && pf.user_id !== sesion.user.id
+              ? '<select data-rol-de="' + pf.user_id + '">' + Object.keys(NOMBRE_ROL).map(function (k) {
+                  return '<option value="' + k + '"' + (pf.rol === k ? " selected" : "") + ">" + NOMBRE_ROL[k] + "</option>";
+                }).join("") + "</select>"
+              : '<span class="pill flat">' + (NOMBRE_ROL[pf.rol] || pf.rol) + "</span>") +
+          "</div>";
+        }).join("") +
+      '</div><p class="note">Petisero y veterinario cargan y editan, pero no ven la plata ni pueden borrar.</p></div>' +
+      "</div>" +
+      '<div class="card pad stack"><p class="eyebrow">Copia de seguridad</p>' +
+      '<p class="sub">Los datos viven en el servidor y todos ven lo mismo desde cualquier dispositivo. Igual podés bajar una copia en cualquier momento.</p>' +
+      '<div class="row"><button class="btn" id="export">Exportar copia</button><button class="btn" id="print">Imprimir listado</button></div></div>' +
+      "</section>";
+  }
+
+  /* ---------- ficha ---------- */  /* ---------- ficha ---------- */
+
+  function vFicha(id) {
+    var h = db.horses.filter(function (x) { return x.id === id; })[0];
+    if (!h) return '<section class="card"><div class="empty"><h3>Ese caballo ya no está</h3><a class="btn" href="#/caballos">Volver al listado</a></div></section>';
+
+    var fotos = h.fotos || [];
+    if (ui.galIdx >= fotos.length) ui.galIdx = 0;
+    var ap = promedioApt(h);
+    var al = alertas(h);
+    var hs = hijos(h);
+    var madre = porNombre(h.madre), padre = porNombre(h.padre);
+    var e = estado(h.estado);
+
+    var html = '<section class="stack">' +
+      '<div class="row no-print"><a class="btn sm" href="#/caballos">← Caballos</a><span class="grow"></span>' +
+        '<button class="btn sm" id="mover">Mover</button>' +
+        '<button class="btn sm" id="print-ficha">Imprimir ficha de venta</button>' +
+        '<a class="btn sm" href="#/editar/' + h.id + '">Editar</a></div>';
+
+    if (ui.moviendo === h.id) {
+      html += '<div class="card pad stack no-print" style="border-color:var(--accent)"><p class="eyebrow">Registrar traslado</p>' +
+        '<div class="grid2">' +
+          '<div class="field"><label>Sale de</label><input id="mv-desde" value="' + esc(h.ubicacion || "") + '" readonly></div>' +
+          '<div class="field"><label>Llega a</label><input id="mv-hasta" list="l-ubic" placeholder="Campo, cancha, clínica…"></div>' +
+          '<div class="field"><label>Fecha</label><input id="mv-fecha" type="date" value="' + hoy() + '"></div>' +
+          '<div class="field"><label>Motivo</label><input id="mv-motivo" placeholder="Torneo, tratamiento, descanso…"></div>' +
+          '<div class="field"><label>Transporte</label><input id="mv-transporte" placeholder="Camión propio, flete…"></div>' +
+        "</div><datalist id='l-ubic'>" + ubicaciones().map(function (u) { return '<option value="' + esc(u) + '">'; }).join("") + "</datalist>" +
+        '<div class="row"><button class="btn primary" id="mv-ok" data-id="' + h.id + '">Registrar y actualizar ubicación</button>' +
+        '<button class="btn" id="mv-cancel">Cancelar</button></div>' +
+        '<p class="note">Queda asentado el traslado en el historial y el caballo pasa a figurar en el destino.</p></div>';
+    }
+
+    html += '<div class="ficha-top">' +
+      '<div class="gal">' +
+        '<div class="main">' + (fotos.length ? '<img src="' + fotos[ui.galIdx] + '" alt="' + esc(h.nombre) + '">'
+          : '<span style="font-family:var(--serif);font-size:4rem;color:var(--faint)">' + esc((h.nombre || "?").slice(0, 1).toUpperCase()) + "</span>") + "</div>" +
+        (fotos.length > 1 ? '<div class="thumbs">' + fotos.map(function (f, i) {
+          return '<button data-gal="' + i + '" aria-current="' + (i === ui.galIdx) + '"><img src="' + f + '" alt="Foto ' + (i + 1) + '"></button>';
+        }).join("") + "</div>" : "") +
+        (h.video ? '<a class="btn sm" href="' + esc(h.video) + '" target="_blank" rel="noopener">▶ Ver video de juego</a>' : "") +
+        (h.precioVenta ? '<div class="price-box cost"><span class="k">Precio pedido</span><span class="v">' + money(h.precioVenta, h.precioMoneda) + "</span></div>" : "") +
+      "</div>";
+
+    html += '<div class="stack">' +
+      '<div><div class="row" style="gap:.6rem">' + pillEstado(h) +
+        (h.estado === "competicion" ? '<span class="pill" style="background:var(--brass-soft);color:var(--brass)">Temporada activa</span>' : "") +
+        (letraRepro(h) === "P" ? '<span class="pill" style="background:color-mix(in srgb,var(--st-vientre) 15%,transparent);color:var(--st-vientre)">Preñada</span>' : "") +
+        (letraRepro(h) === "V" ? '<span class="pill flat">Vacía</span>' : "") +
+      "</div>" +
+      '<h1 class="ficha-name">' + esc(h.nombre || "Sin nombre") + "</h1>" +
+      '<p class="ficha-sub">' + esc([h.apodo ? "“" + h.apodo + "”" : "", h.sexo, edadTxt(h), h.pelaje].filter(Boolean).join(" · ")) + "</p></div>";
+
+    html += '<div class="kv">' +
+      kv("Nacimiento", fmtFecha(h.nacimiento)) +
+      kv("Ubicación", h.ubicacion || "—") +
+      kv("Petisero", h.petisero || "—") +
+      kv("Jinete", h.jinete || "—") +
+      kv("Criador", h.criador || "—") +
+      kv("Microchip / marca", h.microchip || "—") +
+    "</div>";
+
+    if (al.length) {
+      html += '<div class="alerts no-print">' + al.map(function (a) {
+        return '<div class="alert-row ' + (a.n === "crit" ? "crit" : "warn") + '">' + esc(a.t) + "</div>";
+      }).join("") + "</div>";
+    }
+
+    html += "</div></div>";
+
+    /* aptitudes */
+    if (ap) {
+      html += '<div class="card pad stack"><div class="row"><p class="eyebrow grow">Puntaje físico y aptitudes</p>' +
+        '<div class="score-big"><span class="n">' + ap.toFixed(1) + '</span><span class="d">promedio general</span></div></div>' +
+        '<div class="apt">' + APTITUDES.map(function (a) {
+          var v = (h.aptitudes && h.aptitudes[a.id]) || 0;
+          if (!v) return "";
+          return '<div class="r"><span class="lb">' + esc(a.label) + '</span><span class="bar"><span style="width:' + (v * 10) + '%"></span></span><span class="n">' + v + "</span></div>";
+        }).join("") + "</div>" +
+        (h.observacionesFisicas ? '<p class="sub">' + esc(h.observacionesFisicas) + "</p>" : "") + "</div>";
+    }
+
+    /* videos */
+    var vids = h.videos || [];
+    if (vids.length) {
+      html += '<div class="card pad stack no-print"><p class="eyebrow">Videos — ' + vids.length + "</p>" +
+        '<div class="vgrid">' + vids.map(function (v) {
+          return '<figure class="vfig"><video controls preload="metadata" playsinline data-vpath="' + esc(v.path) + '"></video>' +
+            (v.nombre ? '<figcaption class="note">' + esc(v.nombre) + "</figcaption>" : "") + "</figure>";
+        }).join("") + "</div></div>";
+    }
+
+    /* torneos */
+    var tor = h.torneos || [];
+    if (tor.length) {
+      var chukkers = tor.reduce(function (a, t) { return a + (Number(t.chukkers) || 0); }, 0);
+      var premios = tor.filter(function (t) { return t.premio; });
+      html += '<div class="card"><div class="pad" style="padding-bottom:.5rem"><div class="row"><p class="eyebrow grow">Historial deportivo</p>' +
+        '<span class="pill flat">' + tor.length + " torneos</span><span class='pill flat'>" + chukkers + " chukkers</span>" +
+        (premios.length ? "<span class='pill' style='background:var(--brass-soft);color:var(--brass)'>" + premios.length + " premios</span>" : "") + "</div></div>" +
+        '<div class="scroller"><table><thead><tr><th>Año</th><th>Torneo</th><th>Jugador</th><th class="num">Chukkers</th><th>Resultado</th></tr></thead><tbody>' +
+        tor.slice().sort(function (a, b) { return String(b.anio || "").localeCompare(String(a.anio || "")); }).map(function (t) {
+          return "<tr><td class='tnum'>" + esc(t.anio || "—") + "</td><td>" + esc(t.torneo || "—") + "</td><td>" + esc(t.jugador || "—") +
+            '</td><td class="num">' + esc(t.chukkers || "—") + '</td><td>' + (t.premio ? '<span class="prize">★ ' + esc(t.premio) + "</span>" : "—") + "</td></tr>";
+        }).join("") + "</tbody></table></div></div>";
+    }
+
+    /* pedigrí y descendencia */
+    html += '<div class="grid2">' +
+      '<div class="card pad stack"><p class="eyebrow">Pedigrí</p>' +
+        '<div class="kv">' + kv("Padre", padre ? '<a href="#/caballo/' + padre.id + '">' + esc(padre.nombre) + "</a>" : esc(h.padre || "—"), true) +
+        kv("Madre", madre ? '<a href="#/caballo/' + madre.id + '">' + esc(madre.nombre) + "</a>" : esc(h.madre || "—"), true) +
+        kv("Origen", h.origen || "—") + "</div></div>" +
+      '<div class="card pad stack"><p class="eyebrow">Descendencia — ' + hs.length + "</p>" +
+        (hs.length ? '<div class="rel">' + hs.map(function (x) {
+          return '<a href="#/caballo/' + x.id + '"><span class="sw" style="background:' + estado(x.estado).color + '"></span>' + esc(x.nombre) +
+            ' <span class="note tnum">' + (x.nacimiento ? x.nacimiento.slice(0, 4) : "") + "</span></a>";
+        }).join("") + "</div>" : '<p class="sub">Sin productos cargados.</p>') +
+        (h.reproductivo === "prenada" ? '<p class="note">Preñada — parto estimado ' + fmtFecha(h.fechaParto) + (h.receptora ? " · receptora: " + esc(h.receptora) : "") + "</p>" : "") +
+      "</div></div>";
+
+    /* movimientos */
+    var mvs = (h.movimientos || []).slice().sort(function (a, b) { return String(b.fecha || "").localeCompare(String(a.fecha || "")); });
+    html += '<div class="card pad stack"><div class="row"><p class="eyebrow grow">Historial de movimientos</p>' +
+      '<span class="pill flat">Hoy en ' + esc(h.ubicacion || "sin ubicación") + "</span></div>";
+    if (mvs.length) {
+      html += '<ol class="timeline">' + mvs.map(function (m, i) {
+        return '<li class="tl' + (i === 0 ? " now" : "") + '"><span class="tl-f tnum">' + fmtFecha(m.fecha) + "</span>" +
+          '<span class="tl-r">' + esc(m.desde || "—") + ' <span class="tl-a">→</span> <strong>' + esc(m.hasta || "—") + "</strong></span>" +
+          '<span class="tl-m">' + esc([m.motivo, m.transporte].filter(Boolean).join(" · ") || "—") + "</span></li>";
+      }).join("") + "</ol>";
+    } else {
+      html += '<p class="sub">Sin traslados registrados. Con el botón <strong>Mover</strong> de arriba queda asentado el primero.</p>';
+    }
+    html += "</div>";
+
+    /* sanidad */
+    html += '<div class="card pad stack"><p class="eyebrow">Sanidad</p><div class="kv">' +
+      kv("Última vacunación", fmtFecha(h.vacunaFecha)) +
+      kv("Coggins", fmtFecha(h.cogginsFecha)) +
+      kv("Último herraje", fmtFecha(h.herrajeFecha)) +
+      kv("Desparasitación", fmtFecha(h.desparasitacionFecha)) +
+      kv("Odontología", fmtFecha(h.odontologiaFecha)) +
+      kv("Alta estimada", fmtFecha(h.altaEstimada)) +
+    "</div>" + (h.historialClinico ? '<p class="sub" style="white-space:pre-wrap">' + esc(h.historialClinico) + "</p>" : "") + "</div>";
+
+    /* economía */
+    html += '<div class="card pad stack cost"><p class="eyebrow">Economía del caballo</p><div class="kv">' +
+      kv("Costo de adquisición", money(h.costoMonto, h.costoMoneda)) +
+      kv("Gastos acumulados", money(gastoTotalUSD(h), "USD")) +
+      kv("Invertido", "<strong>" + money(invertidoUSD(h), "USD") + "</strong>", true) +
+      kv("Valuación actual", money(h.valuacion, h.valuacionMoneda)) +
+      kv("Suma asegurada", money(h.seguroSuma, h.seguroMoneda)) +
+      kv("Ingresos generados", money(ingresoTotalUSD(h), "USD")) +
+    "</div>";
+    if ((h.gastos || []).length) {
+      html += '<div class="scroller"><table><thead><tr><th>Fecha</th><th>Rubro</th><th>Detalle</th><th class="num">Monto</th></tr></thead><tbody>' +
+        h.gastos.slice().sort(function (a, b) { return String(b.fecha || "").localeCompare(String(a.fecha || "")); }).map(function (g) {
+          return "<tr><td class='tnum'>" + fmtFecha(g.fecha) + "</td><td>" + esc(g.rubro || "—") + "</td><td>" + esc(g.detalle || "") +
+            '</td><td class="num">' + money(g.monto, g.moneda) + "</td></tr>";
+        }).join("") + "</tbody></table></div>";
+    }
+    html += "</div>";
+
+    if (sesion.perfil && sesion.perfil.rol === "dueno") {
+      var fp = (db.fichasPublicas || {})[h.id];
+      html += '<div class="card pad stack no-print"><p class="eyebrow">Ficha comercial por link</p>' +
+        (fp
+          ? '<div class="row"><span class="pill ' + (fp.activa ? "ok" : "flat") + '">' + (fp.activa ? "Activa" : "Apagada") + "</span>" +
+            '<span class="note tnum">' + fp.vistas + (fp.vistas === 1 ? " visita" : " visitas") + '</span><span class="grow"></span>' +
+            '<button class="btn sm" data-copiar="' + esc(linkFicha(fp.slug)) + '">Copiar link</button>' +
+            '<button class="btn sm" id="fp-toggle" data-cab="' + h.id + '">' + (fp.activa ? "Apagar" : "Prender") + "</button></div>" +
+            '<p class="note mono" style="word-break:break-all">' + esc(linkFicha(fp.slug)) + "</p>"
+          : '<p class="sub">Generá un link público de solo lectura para mandarle a un comprador: fotos, videos, pedigrí, torneos y precio pedido. Nunca muestra costos ni nada interno, y se apaga cuando quieras.</p>' +
+            '<button class="btn sm" id="fp-crear" data-cab="' + h.id + '" style="align-self:flex-start">Crear el link</button>') +
+        "</div>";
+    }
+
+    if (h.notas) html += '<div class="card pad stack"><p class="eyebrow">Notas</p><p style="white-space:pre-wrap">' + esc(h.notas) + "</p></div>";
+    if (h.estado === "baja") {
+      html += '<div class="card pad stack"><p class="eyebrow">Baja</p><div class="kv">' + kv("Fecha", fmtFecha(h.fechaBaja)) + kv("Motivo", h.motivoBaja || "—") + "</div></div>";
+    }
+
+    return html + "</section>";
+  }
+
+  function kv(k, v, raw) {
+    return '<div><div class="k">' + esc(k) + '</div><div class="v">' + (raw ? v : esc(v)) + "</div></div>";
+  }
+
+  /* ---------- formulario ---------- */
+
+  function vForm(id) {
+    var h = id ? db.horses.filter(function (x) { return x.id === id; })[0] : null;
+    if (id && !h) return '<section class="card"><div class="empty"><h3>No encontré ese caballo</h3></div></section>';
+    var n = h || { fotos: [], torneos: [], gastos: [], ingresos: [], aptitudes: {} };
+
+    function inp(name, label, val, type, attrs) {
+      return '<div class="field"><label for="i-' + name + '">' + esc(label) + '</label><input id="i-' + name + '" name="' + name +
+        '" type="' + (type || "text") + '" value="' + esc(val == null ? "" : val) + '" ' + (attrs || "") + "></div>";
+    }
+    function sel(name, label, opts, val) {
+      return '<div class="field"><label for="i-' + name + '">' + esc(label) + '</label><select id="i-' + name + '" name="' + name + '">' +
+        opts.map(function (o) {
+          var v = typeof o === "string" ? o : o.v, t = typeof o === "string" ? o : o.t;
+          return '<option value="' + esc(v) + '"' + (String(val || "") === String(v) ? " selected" : "") + ">" + esc(t) + "</option>";
+        }).join("") + "</select></div>";
+    }
+    function ta(name, label, val) {
+      return '<div class="field"><label for="i-' + name + '">' + esc(label) + '</label><textarea id="i-' + name + '" name="' + name + '">' + esc(val || "") + "</textarea></div>";
+    }
+    function mon(name, label, val, curVal) {
+      return '<div class="field"><label for="i-' + name + '">' + esc(label) + '</label><div class="row" style="flex-wrap:nowrap;gap:.3rem">' +
+        '<input id="i-' + name + '" name="' + name + '" type="number" step="1" min="0" value="' + esc(val == null ? "" : val) + '" style="flex:1">' +
+        '<select name="' + name + 'Moneda" aria-label="Moneda" style="width:5.2rem"><option value="USD"' + (curVal !== "ARS" ? " selected" : "") + ">USD</option>" +
+        '<option value="ARS"' + (curVal === "ARS" ? " selected" : "") + ">ARS</option></select></div></div>";
+    }
+
+    var html = '<section class="stack"><form id="form" class="stack">' +
+      '<div class="h-sec"><div><p class="eyebrow">' + (h ? "Editar ficha" : "Nuevo caballo") + "</p><h2>" + esc(h ? h.nombre : "Cargar un caballo") + "</h2></div>" +
+      '<div class="row"><a class="btn" href="' + (h ? "#/caballo/" + h.id : "#/caballos") + '">Cancelar</a>' +
+      '<button class="btn primary" type="submit">Guardar</button></div></div>';
+
+    html += '<fieldset class="fs"><legend>Identidad</legend><div class="grid2">' +
+      inp("nombre", "Nombre *", n.nombre, "text", "required") +
+      inp("apodo", "Sobrenombre", n.apodo) +
+      sel("sexo", "Sexo", SEXOS, n.sexo || "Yegua") +
+      inp("nacimiento", "Fecha de nacimiento", n.nacimiento, "date") +
+      inp("pelaje", "Pelaje y señas", n.pelaje) +
+      inp("microchip", "Microchip / n° de marca", n.microchip) +
+      inp("criador", "Criador", n.criador) +
+      sel("origen", "Origen", ["", "Embrión (cría propia)", "Manada (cría propia)", "Compra de embrión", "Comprado"], n.origen) +
+      "</div>" +
+      '<div class="field"><label>Fotos</label><div class="photos" id="photos"></div>' +
+      '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar fotos<input type="file" id="foto-in" accept="image/*" multiple hidden></label>' +
+      '<p class="note">Se achican solas a 620 px para no llenar el espacio. Recomendado: hasta 4 por caballo.</p></div>' +
+      '<div class="field"><label>Videos</label><div class="rowset" id="vlist"></div>' +
+      '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar video<input type="file" id="video-in" accept="video/*" hidden></label>' +
+      '<p class="note">Se pueden filmar directo con el celular. Quedan guardados solo en este dispositivo y no entran en el respaldo exportado. Máximo 100 MB por video.</p></div>' +
+      inp("video", "Link a video de juego (YouTube u otro)", n.video, "url") +
+      "</fieldset>";
+
+    html += '<fieldset class="fs"><legend>Estado y ubicación</legend><div class="grid2">' +
+      sel("estado", "Estado", ESTADOS.map(function (e) { return { v: e.id, t: e.label }; }), n.estado || "juego") +
+      sel("reproductivo", "Estado reproductivo (hembras)", [{ v: "", t: "No aplica" }, { v: "vacia", t: "Vacía (V)" }, { v: "prenada", t: "Preñada (P)" }], n.reproductivo) +
+      inp("ubicacion", "Ubicación", n.ubicacion, "text", 'list="l-ubic"') +
+      inp("petisero", "Petisero a cargo", n.petisero) +
+      inp("jinete", "Jinete asignado", n.jinete) +
+      inp("altaEstimada", "Alta estimada (si está en recuperación)", n.altaEstimada, "date") +
+      "</div><datalist id='l-ubic'>" + ubicaciones().map(function (u) { return '<option value="' + esc(u) + '">'; }).join("") + "</datalist>" +
+      '<div class="grid2">' + inp("fechaBaja", "Fecha de baja (venta o fallecimiento)", n.fechaBaja, "date") +
+      inp("motivoBaja", "Motivo de la baja", n.motivoBaja) + "</div></fieldset>";
+
+    html += '<fieldset class="fs"><legend>Pedigrí y reproducción</legend><div class="grid2">' +
+      inp("padre", "Padre", n.padre, "text", 'list="l-cab"') +
+      inp("madre", "Madre", n.madre, "text", 'list="l-cab"') +
+      inp("servicio", "Servicio / semen", n.servicio) +
+      inp("receptora", "Receptora", n.receptora) +
+      inp("fechaParto", "Parto estimado", n.fechaParto, "date") +
+      "</div><datalist id='l-cab'>" + db.horses.map(function (x) { return '<option value="' + esc(x.nombre) + '">'; }).join("") + "</datalist>" +
+      '<p class="note">Escribí el nombre exacto de la madre o el padre y el sistema arma solo el árbol de crías.</p></fieldset>';
+
+    html += '<fieldset class="fs"><legend>Puntaje físico</legend>' +
+      APTITUDES.map(function (a) {
+        var v = (n.aptitudes && n.aptitudes[a.id]) || 0;
+        return '<div class="slider-row"><label for="a-' + a.id + '" style="font-size:.85rem">' + esc(a.label) + "</label>" +
+          '<input id="a-' + a.id + '" name="apt_' + a.id + '" type="range" min="0" max="10" step="1" value="' + v + '" data-apt="' + a.id + '">' +
+          '<span class="n" id="av-' + a.id + '">' + (v || "–") + "</span></div>";
+      }).join("") +
+      ta("observacionesFisicas", "Observaciones", n.observacionesFisicas) + "</fieldset>";
+
+    html += '<fieldset class="fs"><legend>Historial deportivo</legend><div class="rowset" id="torneos"></div>' +
+      '<button type="button" class="btn sm" id="add-torneo" style="align-self:flex-start">+ Agregar torneo</button></fieldset>';
+
+    html += '<fieldset class="fs"><legend>Sanidad</legend><div class="grid2">' +
+      inp("vacunaFecha", "Última vacunación", n.vacunaFecha, "date") +
+      inp("cogginsFecha", "Coggins", n.cogginsFecha, "date") +
+      inp("herrajeFecha", "Último herraje", n.herrajeFecha, "date") +
+      inp("desparasitacionFecha", "Desparasitación", n.desparasitacionFecha, "date") +
+      inp("odontologiaFecha", "Odontología", n.odontologiaFecha, "date") +
+      "</div>" + ta("historialClinico", "Historial clínico y lesiones", n.historialClinico) + "</fieldset>";
+
+    html += '<fieldset class="fs"><legend>Economía</legend><div class="grid2">' +
+      mon("costoMonto", "Costo de adquisición", n.costoMonto, n.costoMoneda) +
+      mon("valuacion", "Valuación actual", n.valuacion, n.valuacionMoneda) +
+      mon("precioVenta", "Precio pedido", n.precioVenta, n.precioMoneda) +
+      mon("seguroSuma", "Suma asegurada", n.seguroSuma, n.seguroMoneda) +
+      "</div>" +
+      '<p class="eyebrow" style="margin-top:.4rem">Gastos imputados</p><div class="rowset" id="gastos"></div>' +
+      '<button type="button" class="btn sm" id="add-gasto" style="align-self:flex-start">+ Agregar gasto</button>' +
+      '<p class="eyebrow" style="margin-top:.6rem">Ingresos</p><div class="rowset" id="ingresos"></div>' +
+      '<button type="button" class="btn sm" id="add-ingreso" style="align-self:flex-start">+ Agregar ingreso</button>' +
+      "</fieldset>";
+
+    html += '<fieldset class="fs"><legend>Notas</legend>' + ta("notas", "Observaciones generales", n.notas) + "</fieldset>";
+
+    html += '<div class="row"><button class="btn primary" type="submit">Guardar caballo</button>' +
+      '<a class="btn" href="' + (h ? "#/caballo/" + h.id : "#/caballos") + '">Cancelar</a><span class="grow"></span>' +
+      (h ? '<button class="btn danger" type="button" id="del">Eliminar ficha</button>' : "") + "</div>";
+
+    return html + "</form></section>";
+  }
+
+  /* filas dinámicas */
+  var draft = { fotos: [], fotosMeta: [], videos: [], torneos: [], gastos: [], ingresos: [], _prevFotosMeta: [], _prevVideos: [] };
+
+  function pintarFotos() {
+    var box = $("#photos");
+    if (!box) return;
+    box.innerHTML = draft.fotos.map(function (f, i) {
+      return '<div class="p"><img src="' + f + '" alt="Foto ' + (i + 1) + '"><button type="button" data-rm-foto="' + i + '" aria-label="Quitar foto">×</button></div>';
+    }).join("") || '<p class="note">Sin fotos todavía.</p>';
+  }
+
+  function pintarVideos() {
+    var box = $("#vlist");
+    if (!box) return;
+    box.innerHTML = draft.videos.map(function (v, i) {
+      return '<div class="rw" style="grid-template-columns:1fr auto 2rem">' +
+        '<div class="field"><label>Título del video</label><input value="' + esc(v.nombre || "") + '" data-vt="' + i + '"></div>' +
+        '<span class="note" style="align-self:center">' + (v.blob ? "se sube al guardar · " + v.mb + " MB" : "ya en el servidor") + "</span>" +
+        '<button type="button" class="del" data-rm-v="' + i + '" aria-label="Quitar video">×</button></div>';
+    }).join("") || '<p class="note">Sin videos todavía.</p>';
+  }
+
+  function pintarTorneos() {
+    var box = $("#torneos");
+    if (!box) return;
+    box.innerHTML = draft.torneos.map(function (t, i) {
+      return '<div class="rw"><div class="field"><label>Año</label><input value="' + esc(t.anio || "") + '" data-t="anio" data-i="' + i + '" inputmode="numeric"></div>' +
+        '<div class="field"><label>Torneo</label><input value="' + esc(t.torneo || "") + '" data-t="torneo" data-i="' + i + '"></div>' +
+        '<div class="field"><label>Jugador</label><input value="' + esc(t.jugador || "") + '" data-t="jugador" data-i="' + i + '"></div>' +
+        '<div class="field"><label>Chukkers</label><input value="' + esc(t.chukkers || "") + '" data-t="chukkers" data-i="' + i + '" inputmode="numeric"></div>' +
+        '<div class="field"><label>Premio</label><input value="' + esc(t.premio || "") + '" data-t="premio" data-i="' + i + '"></div>' +
+        '<button type="button" class="del" data-rm-t="' + i + '" aria-label="Quitar">×</button></div>';
+    }).join("") || '<p class="note">Sin torneos cargados.</p>';
+  }
+
+  function pintarMovs(kind) {
+    var box = $("#" + kind);
+    if (!box) return;
+    var arr = draft[kind];
+    var opts = kind === "gastos" ? RUBROS : ["Venta", "Alquiler de temporada", "Premio", "Venta de embrión", "Servicio", "Otros"];
+    box.innerHTML = arr.map(function (g, i) {
+      return '<div class="rw"><div class="field"><label>Fecha</label><input type="date" value="' + esc(g.fecha || "") + '" data-g="fecha" data-k="' + kind + '" data-i="' + i + '"></div>' +
+        '<div class="field"><label>Rubro</label><select data-g="rubro" data-k="' + kind + '" data-i="' + i + '">' +
+        opts.map(function (r) { return '<option' + (g.rubro === r ? " selected" : "") + ">" + esc(r) + "</option>"; }).join("") + "</select></div>" +
+        '<div class="field"><label>Detalle</label><input value="' + esc(g.detalle || "") + '" data-g="detalle" data-k="' + kind + '" data-i="' + i + '"></div>' +
+        '<div class="field"><label>Monto</label><input type="number" step="1" min="0" value="' + esc(g.monto == null ? "" : g.monto) + '" data-g="monto" data-k="' + kind + '" data-i="' + i + '"></div>' +
+        '<div class="field"><label>Moneda</label><select data-g="moneda" data-k="' + kind + '" data-i="' + i + '"><option' + (g.moneda !== "ARS" ? " selected" : "") + '>USD</option><option' + (g.moneda === "ARS" ? " selected" : "") + '>ARS</option></select></div>' +
+        '<button type="button" class="del" data-rm-g="' + i + '" data-k="' + kind + '" aria-label="Quitar">×</button></div>';
+    }).join("") || '<p class="note">Sin movimientos cargados.</p>';
+  }
+
+  /* ============ router ============ */
+
+  function ruta() {
+    var h = location.hash.replace(/^#\/?/, "") || "tablero";
+    var p = h.split("/");
+    return { vista: p[0] || "tablero", id: p[1] || null };
+  }
+
+  function render() {
+    var r = ruta();
+    var app = $("#app");
+
+    document.body.classList.toggle("sin-sesion", !sesion.user || r.vista === "f");
+    document.body.classList.toggle("rol-limitado", !!(sesion.perfil && sesion.perfil.rol !== "dueno"));
+
+    if (r.vista === "f") { vFichaPublica(r.id); return; }
+    if (!sesion.listo) { app.innerHTML = '<section class="card pad"><div class="empty"><h3>Cargando el establo…</h3></div></section>'; return; }
+    if (!sesion.user) { app.innerHTML = vLogin(); return; }
+    if (!sesion.perfil) { app.innerHTML = vOnboarding(); return; }
+    if (r.vista === "finanzas" && sesion.perfil.rol !== "dueno") { location.hash = "#/tablero"; return; }
+
+    var html;
+
+    if (r.vista === "caballo") html = vFicha(r.id);
+    else if (r.vista === "nuevo" || r.vista === "editar") html = vForm(r.id);
+    else if (r.vista === "corral") html = vCorral();
+    else if (r.vista === "caballos") html = vCaballos();
+    else if (r.vista === "temporadas") html = vTemporadas();
+    else if (r.vista === "temporada") html = vTemporada(r.id);
+    else if (r.vista === "armar") html = vPickerCaballos(r.id);
+    else if (r.vista === "movimientos") html = vMovimientos();
+    else if (r.vista === "crias") html = vCrias();
+    else if (r.vista === "sanidad") html = vSanidad();
+    else if (r.vista === "finanzas") html = vFinanzas();
+    else if (r.vista === "memoria") html = vMemoria();
+    else if (r.vista === "datos") html = vDatos();
+    else html = vTablero();
+
+    app.innerHTML = html;
+    var grupo = { caballo: "caballos", nuevo: "caballos", editar: "caballos", temporada: "temporadas", armar: "temporadas" };
+    $$("#tabs a").forEach(function (a) {
+      var t = a.getAttribute("href").replace("#/", "");
+      a.classList.toggle("on", t === r.vista || t === grupo[r.vista]);
+    });
+    $$(".cur-toggle button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.cur === ui.cur); });
+
+    if (r.vista === "nuevo" || r.vista === "editar") montarForm(r.id);
+    hidratarVideos();
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+
+  function montarForm(id) {
+    var h = id ? db.horses.filter(function (x) { return x.id === id; })[0] : null;
+    draft.fotos = h && h.fotos ? h.fotos.slice() : [];
+    draft.fotosMeta = h && h.fotosMeta ? h.fotosMeta.slice() : [];
+    while (draft.fotosMeta.length < draft.fotos.length) draft.fotosMeta.push(null);
+    draft.videos = h && h.videos ? h.videos.map(function (v) { return { id: v.id, path: v.path, nombre: v.nombre, fecha: v.fecha }; }) : [];
+    draft._prevFotosMeta = draft.fotosMeta.filter(Boolean).slice();
+    draft._prevVideos = draft.videos.slice();
+    draft.torneos = h && h.torneos ? JSON.parse(JSON.stringify(h.torneos)) : [];
+    draft.gastos = h && h.gastos ? JSON.parse(JSON.stringify(h.gastos)) : [];
+    draft.ingresos = h && h.ingresos ? JSON.parse(JSON.stringify(h.ingresos)) : [];
+    pintarFotos(); pintarVideos(); pintarTorneos(); pintarMovs("gastos"); pintarMovs("ingresos");
+  }
+
+  function guardar(form, id) {
+    var d = new FormData(form);
+    var h = id ? db.horses.filter(function (x) { return x.id === id; })[0] : null;
+    var nuevo = h || { id: uid(), creado: hoy(), movimientos: [] };
+    var ubicAnterior = h ? (h.ubicacion || "") : "";
+
+    ["nombre", "apodo", "sexo", "nacimiento", "pelaje", "microchip", "criador", "origen", "video",
+     "estado", "reproductivo", "ubicacion", "petisero", "jinete", "altaEstimada", "fechaBaja", "motivoBaja",
+     "padre", "madre", "servicio", "receptora", "fechaParto",
+     "vacunaFecha", "cogginsFecha", "herrajeFecha", "desparasitacionFecha", "odontologiaFecha",
+     "historialClinico", "observacionesFisicas", "notas"].forEach(function (k) {
+      nuevo[k] = (d.get(k) || "").toString().trim();
+    });
+
+    ["costoMonto", "valuacion", "precioVenta", "seguroSuma"].forEach(function (k) {
+      var v = d.get(k);
+      nuevo[k] = v === "" || v == null ? "" : Number(v);
+      var mk = k === "costoMonto" ? "costoMoneda" : k === "precioVenta" ? "precioMoneda" : k === "valuacion" ? "valuacionMoneda" : "seguroMoneda";
+      nuevo[mk] = d.get(k + "Moneda") || "USD";
+    });
+
+    nuevo.aptitudes = {};
+    APTITUDES.forEach(function (a) {
+      var v = Number(d.get("apt_" + a.id) || 0);
+      if (v > 0) nuevo.aptitudes[a.id] = v;
+    });
+
+    nuevo.fotos = draft.fotos.slice();
+    nuevo.fotosMeta = draft.fotosMeta.slice();
+    nuevo.videos = draft.videos.slice();
+    nuevo.torneos = draft.torneos.filter(function (t) { return t.torneo || t.anio; });
+    nuevo.gastos = draft.gastos.filter(function (g) { return g.monto; });
+    nuevo.ingresos = draft.ingresos.filter(function (g) { return g.monto; });
+
+    if (!nuevo.nombre) { toast("Poné al menos el nombre del caballo."); return null; }
+
+    var choca = db.horses.filter(function (x) { return x.id !== nuevo.id && norm(x.nombre) === norm(nuevo.nombre); })[0];
+    if (choca) {
+      toast("Ya hay otro caballo llamado " + choca.nombre + ". Poné un nombre distinto: el pedigrí se arma por nombre.");
+      return null;
+    }
+
+    nuevo.movimientos = nuevo.movimientos || [];
+    if (h && nuevo.ubicacion && nuevo.ubicacion !== ubicAnterior) {
+      var movAuto = { fecha: hoy(), desde: ubicAnterior, hasta: nuevo.ubicacion, motivo: "Cambio cargado desde la ficha", transporte: "" };
+      nuevo.movimientos.push(movAuto);
+      nuevo._movNuevo = movAuto;
+    }
+
+    return { nuevo: nuevo, esNuevo: !h };
+  }
+
+  /* ============ eventos ============ */
+
+  document.addEventListener("click", function (ev) {
+    var t = ev.target;
+
+    var dot = t.closest && t.closest(".dot");
+    if (dot) { location.hash = "#/caballo/" + dot.dataset.id; return; }
+
+    var tr = t.closest && t.closest("tr[data-go]");
+    if (tr) { location.hash = tr.dataset.go; return; }
+
+    var gal = t.closest && t.closest("[data-gal]");
+    if (gal) { ui.galIdx = Number(gal.dataset.gal); render(); return; }
+
+    var conCopia = t.closest && t.closest("[data-copiar]");
+    if (conCopia) {
+      var texto = conCopia.dataset.copiar;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(function () { toast("Copiado."); }, function () { toast(texto); });
+      } else { toast(texto); }
+      return;
+    }
+
+    if (t.id === "salir") { sb.auth.signOut().then(function () { location.reload(); }); return; }
+
+    if (t.id === "lg-entrar" || t.id === "lg-crear") {
+      var email = ($("#lg-email").value || "").trim();
+      var clave = $("#lg-pass").value || "";
+      if (!email || !clave) { toast("Completá el correo y la contraseña."); return; }
+      t.disabled = true;
+      var pAuth = t.id === "lg-entrar"
+        ? sb.auth.signInWithPassword({ email: email, password: clave })
+        : sb.auth.signUp({ email: email, password: clave, options: { emailRedirectTo: location.origin + location.pathname } });
+      pAuth.then(function (r) {
+        t.disabled = false;
+        if (r.error) { toast(traducirAuth(r.error.message || "")); return; }
+        if (t.id === "lg-crear" && !(r.data && r.data.session)) {
+          toast("Cuenta creada. Revisá tu correo, tocá el enlace para confirmarla y después entrá.");
+          return;
+        }
+        sesion.user = r.data.session.user;
+        cargarPerfil().catch(function (e) { errorDatos(e, "No pude cargar tu perfil"); });
+      });
+      return;
+    }
+
+    if (t.id === "ob-crear" || t.id === "ob-unirse") {
+      var miNombre = ($("#ob-nombre").value || "").trim();
+      if (!miNombre) { toast("Poné tu nombre."); $("#ob-nombre").focus(); return; }
+      var pOb;
+      if (t.id === "ob-crear") {
+        var nomOrg = ($("#ob-org").value || "").trim();
+        if (!nomOrg) { toast("Poné el nombre del criadero."); $("#ob-org").focus(); return; }
+        pOb = sb.rpc("crear_organizacion", { p_nombre: nomOrg, p_mi_nombre: miNombre });
+      } else {
+        var codigo = ($("#ob-codigo").value || "").trim().toLowerCase();
+        if (!codigo) { toast("Poné el código de invitación."); $("#ob-codigo").focus(); return; }
+        pOb = sb.rpc("unirse_a_organizacion", { p_codigo: codigo, p_mi_nombre: miNombre });
+      }
+      t.disabled = true;
+      pOb.then(function (r) {
+        t.disabled = false;
+        if (r.error) { toast(r.error.message || "No se pudo."); return; }
+        cargarPerfil().catch(function (e) { errorDatos(e, "No pude cargar el criadero"); });
+      });
+      return;
+    }
+
+    if (t.id === "fp-crear") {
+      var hfp = idHorse(t.dataset.cab);
+      if (!hfp) return;
+      var slug = norm(hfp.nombre).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Math.random().toString(36).slice(2, 6);
+      sb.from("fichas_publicas").insert({ organizacion_id: sesion.perfil.organizacion_id, caballo_id: hfp.id, slug: slug }).select("*").single().then(function (r) {
+        if (r.error) return errorDatos(r.error, "No se pudo crear la ficha");
+        db.fichasPublicas[hfp.id] = r.data;
+        toast("Link creado. Copialo y mandalo.");
+        render();
+      });
+      return;
+    }
+    if (t.id === "fp-toggle") {
+      var fpT = db.fichasPublicas[t.dataset.cab];
+      if (!fpT) return;
+      sb.from("fichas_publicas").update({ activa: !fpT.activa }).eq("id", fpT.id).then(function (r) {
+        if (r.error) return errorDatos(r.error, "No se pudo cambiar");
+        fpT.activa = !fpT.activa;
+        toast(fpT.activa ? "Ficha prendida: el link ya anda." : "Ficha apagada: el link dejó de funcionar.");
+        render();
+      });
+      return;
+    }
+
+    if (t.id === "export") { exportar(); return; }    if (t.id === "export") { exportar(); return; }
+    if (t.id === "print" || t.id === "print-ficha") { window.print(); return; }
+    if (t.id === "f-clear") { ui.filtros = { estado: "", ubicacion: "", sexo: "", incluirBajas: false }; ui.q = ""; $("#q").value = ""; render(); return; }
+
+    if (t.dataset && t.dataset.rmFoto != null) { draft.fotos.splice(Number(t.dataset.rmFoto), 1); draft.fotosMeta.splice(Number(t.dataset.rmFoto), 1); pintarFotos(); return; }
+    if (t.dataset && t.dataset.rmV != null) { draft.videos.splice(Number(t.dataset.rmV), 1); pintarVideos(); return; }
+    if (t.dataset && t.dataset.rmT != null) { draft.torneos.splice(Number(t.dataset.rmT), 1); pintarTorneos(); return; }
+    if (t.dataset && t.dataset.rmG != null) { draft[t.dataset.k].splice(Number(t.dataset.rmG), 1); pintarMovs(t.dataset.k); return; }
+    if (t.id === "add-torneo") { draft.torneos.push({ anio: new Date().getFullYear() }); pintarTorneos(); return; }
+    if (t.id === "add-gasto") { draft.gastos.push({ fecha: hoy(), rubro: RUBROS[0], moneda: "USD" }); pintarMovs("gastos"); return; }
+    if (t.id === "add-ingreso") { draft.ingresos.push({ fecha: hoy(), rubro: "Venta", moneda: "USD" }); pintarMovs("ingresos"); return; }
+
+    if (t.id === "del") {
+      var hDel = idHorse(ruta().id);
+      if (!hDel) return;
+      if (confirm("¿Eliminar la ficha definitivamente? Si el caballo se vendió o falleció, conviene cambiarle el estado a “Fallecida / vendida” en vez de borrarlo.")) {
+        repoEliminarCaballo(hDel).then(function () {
+          db.horses = db.horses.filter(function (x) { return x.id !== hDel.id; });
+          toast("Ficha eliminada.");
+          location.hash = "#/caballos";
+        }).catch(function (e) { errorDatos(e, "No se pudo eliminar"); });
+      }
+      return;
+    }
+
+    if (t.dataset && t.dataset.cur) { ui.cur = t.dataset.cur; render(); return; }
+    if (t.dataset && t.dataset.modo) { ui.corralModo = t.dataset.modo; render(); return; }
+
+    /* --- movimientos --- */
+    if (t.id === "mover") { ui.moviendo = ruta().id; render(); return; }
+    if (t.id === "mv-cancel") { ui.moviendo = null; render(); return; }
+    if (t.id === "mv-ok") {
+      var mh = idHorse(t.dataset.id);
+      var destino = ($("#mv-hasta").value || "").trim();
+      if (!mh) return;
+      if (!destino) { toast("Poné a dónde va el caballo."); $("#mv-hasta").focus(); return; }
+      mh.movimientos = mh.movimientos || [];
+      mh.movimientos.push({
+        fecha: $("#mv-fecha").value || hoy(),
+        desde: mh.ubicacion || "",
+        hasta: destino,
+        motivo: ($("#mv-motivo").value || "").trim(),
+        transporte: ($("#mv-transporte").value || "").trim()
+      });
+      var movNuevo = mh.movimientos[mh.movimientos.length - 1];
+      mh.ubicacion = destino;
+      ui.moviendo = null;
+      toast(mh.nombre + " ahora figura en " + destino + ".");
+      render();
+      repoMover(mh, movNuevo).catch(function (e) { errorDatos(e, "No se pudo registrar el traslado"); });
+      return;
+    }
+
+    /* --- temporadas --- */
+    if (t.id === "nueva-temp" || t.id === "nueva-temp2") { ui.editandoTemp = "nueva"; render(); return; }
+    if (t.id === "edit-temp") { ui.editandoTemp = ruta().id; render(); return; }
+    if (t.id === "tp-cancel") { ui.editandoTemp = null; render(); return; }
+    if (t.id === "tp-ok") {
+      var esNueva = ui.editandoTemp === "nueva";
+      var te = esNueva ? { id: "t" + Date.now().toString(36) + Math.floor(rndId() * 1000), caballos: [] }
+                       : db.temporadas.filter(function (x) { return x.id === ui.editandoTemp; })[0];
+      if (!te) return;
+      var nom = ($("#tp-nombre").value || "").trim();
+      if (!nom) { toast("Poné un nombre para la temporada."); $("#tp-nombre").focus(); return; }
+      te.nombre = nom;
+      te.sede = ($("#tp-sede").value || "").trim();
+      te.desde = $("#tp-desde").value || "";
+      te.hasta = $("#tp-hasta").value || "";
+      te.notas = ($("#tp-notas").value || "").trim();
+      var filaTemp = { organizacion_id: sesion.perfil.organizacion_id, nombre: te.nombre, sede: te.sede || null, desde: te.desde || null, hasta: te.hasta || null, notas: te.notas || null };
+      if (esNueva) {
+        sb.from("temporadas").insert(filaTemp).select("id").single().then(function (r) {
+          if (r.error) return errorDatos(r.error, "No se pudo crear la temporada");
+          te.id = r.data.id;
+          db.temporadas.push(te);
+          ui.editandoTemp = null;
+          toast("Temporada creada. Ahora agregale los caballos.");
+          location.hash = "#/temporada/" + te.id;
+        });
+      } else {
+        sb.from("temporadas").update(filaTemp).eq("id", te.id).then(function (r) {
+          if (r.error) return errorDatos(r.error, "No se pudo guardar la temporada");
+          ui.editandoTemp = null;
+          toast("Temporada actualizada.");
+          render();
+        });
+      }
+      return;
+    }
+    if (t.id === "del-temp") {
+      var td = ruta().id;
+      if (confirm("¿Eliminar esta temporada? Los caballos no se tocan, solo se borra la lista.")) {
+        sb.from("temporadas").delete().eq("id", td).then(function (r) {
+          if (r.error) return errorDatos(r.error, "No se pudo eliminar la temporada");
+          db.temporadas = db.temporadas.filter(function (x) { return x.id !== td; });
+          toast("Temporada eliminada.");
+          location.hash = "#/temporadas";
+        });
+      }
+      return;
+    }
+    if (t.id === "add-cab") { ui.q = ""; $("#q").value = ""; location.hash = "#/armar/" + ruta().id; return; }
+    if (t.dataset && t.dataset.quitar) {
+      var tq = db.temporadas.filter(function (x) { return x.id === t.dataset.temp; })[0];
+      if (!tq) return;
+      tq.caballos = (tq.caballos || []).filter(function (i) { return i !== t.dataset.quitar; });
+      render();
+      sb.from("temporada_caballos").delete().eq("temporada_id", tq.id).eq("caballo_id", t.dataset.quitar).then(function (r) {
+        if (r.error) errorDatos(r.error, "No se pudo sacar de la lista");
+      });
+      return;
+    }
+  });
+
+  document.addEventListener("input", function (ev) {
+    var t = ev.target;
+    if (t.id === "q") {
+      ui.q = t.value;
+      var r = ruta();
+      if (["caballos", "corral", "armar", "movimientos", "memoria"].indexOf(r.vista) === -1) location.hash = "#/caballos";
+      else render();
+      return;
+    }
+    if (t.id === "fx") {
+      db.settings.fx = Number(t.value) || 1;
+      try { localStorage.setItem("elcorral.fx", String(db.settings.fx)); } catch (e) {}
+      render(); $("#fx") && $("#fx").focus();
+      return;
+    }
+    if (t.dataset && t.dataset.apt) { var s = $("#av-" + t.dataset.apt); if (s) s.textContent = t.value === "0" ? "–" : t.value; return; }
+    if (t.dataset && t.dataset.vt != null) { draft.videos[Number(t.dataset.vt)].nombre = t.value; return; }
+    if (t.dataset && t.dataset.t) { draft.torneos[Number(t.dataset.i)][t.dataset.t] = t.value; return; }
+    if (t.dataset && t.dataset.g) { draft[t.dataset.k][Number(t.dataset.i)][t.dataset.g] = t.value; return; }
+  });
+
+  document.addEventListener("change", function (ev) {
+    var t = ev.target;
+    if (t.id === "f-estado") { ui.filtros.estado = t.value; render(); return; }
+    if (t.id === "f-ubic") { ui.filtros.ubicacion = t.value; render(); return; }
+    if (t.id === "f-sexo") { ui.filtros.sexo = t.value; render(); return; }
+    if (t.id === "f-bajas") { ui.filtros.incluirBajas = t.checked; render(); return; }
+
+    if (t.dataset && t.dataset.pick) {
+      var tp = db.temporadas.filter(function (x) { return x.id === t.dataset.temp; })[0];
+      if (!tp) return;
+      tp.caballos = tp.caballos || [];
+      if (t.checked) {
+        if (tp.caballos.indexOf(t.dataset.pick) === -1) tp.caballos.push(t.dataset.pick);
+        sb.from("temporada_caballos").insert({ temporada_id: tp.id, caballo_id: t.dataset.pick }).then(function (r) {
+          if (r.error) errorDatos(r.error, "No se pudo agregar a la lista");
+        });
+      } else {
+        tp.caballos = tp.caballos.filter(function (i) { return i !== t.dataset.pick; });
+        sb.from("temporada_caballos").delete().eq("temporada_id", tp.id).eq("caballo_id", t.dataset.pick).then(function (r) {
+          if (r.error) errorDatos(r.error, "No se pudo sacar de la lista");
+        });
+      }
+      return;
+    }
+    if (t.dataset && t.dataset.rolDe) {
+      var uidRol = t.dataset.rolDe, rolNuevo = t.value;
+      sb.from("perfiles").update({ rol: rolNuevo }).eq("user_id", uidRol).then(function (r) {
+        if (r.error) return errorDatos(r.error, "No se pudo cambiar el rol");
+        (db.equipo || []).forEach(function (pf) { if (pf.user_id === uidRol) pf.rol = rolNuevo; });
+        toast("Rol actualizado.");
+      });
+      return;
+    }
+    if (t.dataset && t.dataset.g) { draft[t.dataset.k][Number(t.dataset.i)][t.dataset.g] = t.value; return; }
+
+    if (t.id === "video-in") {
+      var vf = t.files && t.files[0];
+      t.value = "";
+      if (!vf) return;
+      if (vf.size > 100 * 1024 * 1024) { toast("Ese video pesa más de 100 MB. Filmá uno más corto o recortalo."); return; }
+      var vmb = Math.max(1, Math.round(vf.size / 1048576));
+      draft.videos.push({ blob: vf, nombre: vf.name.replace(/\.[^.]+$/, ""), mb: vmb });
+      pintarVideos();
+      return;
+    }
+
+    if (t.id === "foto-in") {
+      var files = Array.prototype.slice.call(t.files || []);
+      files.forEach(function (f) {
+        leerFoto(f, function (dataUrl) { draft.fotos.push(dataUrl); draft.fotosMeta.push(null); pintarFotos(); });
+      });
+      t.value = "";
+      return;
+    }
+
+  });
+
+  document.addEventListener("submit", function (ev) {  });
+
+  document.addEventListener("submit", function (ev) {
+    if (ev.target.id !== "form") return;
+    ev.preventDefault();
+    var r = ruta();
+    var res = guardar(ev.target, r.vista === "editar" ? r.id : null);
+    if (!res) return;
+    var n = res.nuevo;
+    var conVideos = n.videos.some(function (v) { return v.blob; });
+    toast(conVideos ? "Guardando… los videos pueden tardar un rato." : "Guardando…");
+    repoGuardarCaballo(n, res.esNuevo).then(function () {
+      if (res.esNuevo) db.horses.push(n);
+      return repoRefrescarMedios(n);
+    }).then(function () {
+      toast("Guardado.");
+      location.hash = "#/caballo/" + n.id;
+      render();
+    }).catch(function (e) { errorDatos(e, "No se pudo guardar"); });
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "/" && document.activeElement !== $("#q") && !/input|textarea|select/i.test(document.activeElement.tagName)) {
+      ev.preventDefault(); $("#q").focus(); $("#q").select();
+    }
+    if (ev.key === "Escape" && document.activeElement === $("#q")) { $("#q").blur(); }
+    if (ev.key === "Enter" && document.activeElement && (document.activeElement.id === "lg-pass" || document.activeElement.id === "lg-email")) {
+      var bLogin = $("#lg-entrar");
+      if (bLogin) bLogin.click();
+    }
+  });
+
+  /* tooltip del corral */
+  var tip = null;
+  document.addEventListener("mouseover", function (ev) {
+    var d = ev.target.closest && ev.target.closest(".dot");
+    if (!d) return;
+    tip = $("#tip");
+    var p = (d.dataset.tip || "").split("|");
+    tip.innerHTML = "<b>" + esc(p[0]) + '</b><br><span class="m">' + esc(p[1]) + "</span><br>" + esc(p[2]) + " · " + esc(p[3]);
+    tip.classList.add("on");
+    mover(ev);
+  });
+  document.addEventListener("mousemove", function (ev) { if (tip && tip.classList.contains("on")) mover(ev); });
+  document.addEventListener("mouseout", function (ev) {
+    if (ev.target.closest && ev.target.closest(".dot") && tip) tip.classList.remove("on");
+  });
+  function mover(ev) {
+    var t = $("#tip");
+    var x = Math.min(ev.clientX + 14, window.innerWidth - t.offsetWidth - 10);
+    var y = ev.clientY + 16;
+    if (y + t.offsetHeight > window.innerHeight) y = ev.clientY - t.offsetHeight - 12;
+    t.style.left = x + "px"; t.style.top = y + "px";
+  }
+
+  window.addEventListener("hashchange", function () { ui.galIdx = 0; ui.moviendo = null; ui.editandoTemp = null; render(); });
+
+  /* ============ export ============ */
+
+  function exportar() {
+    var blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "el-corral-respaldo-" + hoy() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    toast("Respaldo descargado. Guardalo en un lugar seguro.");
+  }
+
+  /* ============ datos de ejemplo ============ */
+
+  /* ============ arranque ============ */  /* ============ arranque ============ */
+
+  if (!location.hash) location.hash = "#/tablero";
+  render();
+  iniciar();
+  window.addEventListener("focus", function () {
+    if (sesion.user && sesion.perfil && Date.now() - ultimaCarga > 60000) {
+      cargarTodo().then(render).catch(function () {});
+    }
+  });
+})();
+</script>
