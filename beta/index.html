@@ -24,6 +24,8 @@
     --st-comp: #C08A12;
     --st-juego: #2F7A4E;
     --st-prep: #3B7595;
+    --st-doma: #2E7D8C;
+    --st-crianat: #B04A6E;
     --st-recup: #AE4530;
     --st-vientre: #7E5795;
     --st-prestada: #61756A;
@@ -44,6 +46,7 @@
       --brass: #D6B064; --brass-soft: #2B2417;
       --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
       --st-comp: #E0B44B; --st-juego: #6ABF8B; --st-prep: #6FAACD; --st-recup: #DE8168;
+      --st-doma: #63C2CE; --st-crianat: #DE8FAC;
       --st-vientre: #B58FC9; --st-prestada: #93A79B; --st-retirada: #BBB29A; --st-baja: #7E8A83;
     }
   }
@@ -55,6 +58,7 @@
     --brass: #D6B064; --brass-soft: #2B2417;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
     --st-comp: #E0B44B; --st-juego: #6ABF8B; --st-prep: #6FAACD; --st-recup: #DE8168;
+    --st-doma: #63C2CE; --st-crianat: #DE8FAC;
     --st-vientre: #B58FC9; --st-prestada: #93A79B; --st-retirada: #BBB29A; --st-baja: #7E8A83;
   }
   :root[data-theme="light"] {
@@ -65,6 +69,7 @@
     --brass: #8A6C22; --brass-soft: #F0E6CB;
     --shadow: 0 1px 2px rgba(20,32,26,.06), 0 6px 18px rgba(20,32,26,.05);
     --st-comp: #C08A12; --st-juego: #2F7A4E; --st-prep: #3B7595; --st-recup: #AE4530;
+    --st-doma: #2E7D8C; --st-crianat: #B04A6E;
     --st-vientre: #7E5795; --st-prestada: #61756A; --st-retirada: #8A8371; --st-baja: #55605A;
   }
 
@@ -296,6 +301,34 @@
   .mono { font-family: var(--mono); }
   .tnum { font-variant-numeric: tabular-nums; }
 
+  .cal-scroll { max-height: 26rem; overflow-y: auto; }
+  .cal-tabla { min-width: 0; border-collapse: separate; border-spacing: 0; }
+  .cal-tabla th.cal-nombre, .cal-tabla td.cal-nombre {
+    position: sticky; left: 0; z-index: 3; background: var(--surface);
+    min-width: 9.5rem; max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    border-right: 1px solid var(--rule); font-size: .84rem;
+  }
+  .cal-tabla thead th { z-index: 2; }
+  .cal-tabla thead th.cal-nombre { z-index: 4; }
+  .cal-tabla th.cal-dia { text-align: center; padding: .3rem .1rem; min-width: 1.9rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .cal-tabla .cal-dow { font-size: .58rem; opacity: .75; }
+  .cal-tabla td.act-celda {
+    text-align: center; cursor: pointer; user-select: none; padding: .32rem .1rem;
+    min-width: 1.9rem; font-family: var(--mono); font-size: .72rem; font-weight: 700;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .cal-tabla td.act-celda:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .cal-tabla .finde { background: color-mix(in srgb, var(--rule) 30%, transparent); }
+  .cal-tabla .hoy { box-shadow: inset 0 0 0 2px var(--accent); }
+  .act-practica { background: color-mix(in srgb, var(--st-juego) 26%, transparent) !important; color: var(--st-juego); }
+  .act-vareo { background: color-mix(in srgb, var(--st-prep) 26%, transparent) !important; color: var(--st-prep); }
+  .act-partido { background: color-mix(in srgb, var(--st-comp) 30%, transparent) !important; color: var(--st-comp); }
+  .tira-mes { display: flex; gap: 2px; flex-wrap: wrap; }
+  .tira-dia { width: .85rem; height: .85rem; border-radius: 2px; background: var(--surface-2); }
+  .tira-dia.act-practica { background: var(--st-juego); }
+  .tira-dia.act-vareo { background: var(--st-prep); }
+  .tira-dia.act-partido { background: var(--st-comp); }
+
   .login-wrap { min-height: 65vh; display: grid; place-items: center; padding: 1rem 0; }
   .login-box { width: 100%; max-width: 24rem; }
   .sin-sesion .top .search, .sin-sesion .top .cur-toggle, .sin-sesion .top > .top-in > .btn, .sin-sesion .tabs { display: none; }
@@ -360,9 +393,11 @@
   var ESTADOS = [
     { id: "competicion", label: "Competición",   color: "var(--st-comp)",     desc: "Juega torneos esta temporada" },
     { id: "juego",       label: "En juego",      color: "var(--st-juego)",    desc: "Trabajando y disponible" },
-    { id: "preparacion", label: "Preparación",   color: "var(--st-prep)",     desc: "Potro, doma o primer año" },
+    { id: "hechura",     label: "Hechura",       color: "var(--st-prep)",     desc: "Haciéndose con el piloto" },
+    { id: "doma",        label: "Doma",          color: "var(--st-doma)",     desc: "Primeros trabajos" },
     { id: "recuperacion",label: "Recuperación",  color: "var(--st-recup)",    desc: "Lesionada o en reposo" },
-    { id: "vientre",     label: "Vientre / haras", color: "var(--st-vientre)",desc: "Madre en el haras" },
+    { id: "cria_donante", label: "Cría donante",  color: "var(--st-vientre)",  desc: "Donante de embriones" },
+    { id: "cria_natural", label: "Cría natural",  color: "var(--st-crianat)",  desc: "Preñez propia en el campo" },
     { id: "prestada",    label: "Prestada",      color: "var(--st-prestada)", desc: "En otro establecimiento" },
     { id: "retirada",    label: "Retirada",      color: "var(--st-retirada)", desc: "Ya no juega, sigue en el campo" },
     { id: "baja",        label: "Fallecida / vendida", color: "var(--st-baja)", desc: "Fuera del conjunto" }
@@ -378,6 +413,13 @@
     { id: "recuperacion", label: "Recuperación" }
   ];
   var SEXOS = ["Yegua", "Padrillo", "Castrado", "Potranca", "Potrillo"];
+  var TIPOS_ACT = [
+    { id: "practica", label: "Práctica", letra: "P", cssVar: "--st-juego" },
+    { id: "vareo",    label: "Vareo",    letra: "V", cssVar: "--st-prep" },
+    { id: "partido",  label: "Partido",  letra: "★", cssVar: "--st-comp" }
+  ];
+  var MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  var DIAS_SEMANA = ["Do","Lu","Ma","Mi","Ju","Vi","Sa"];
   var HEMBRAS = ["Yegua", "Potranca"];
 
   /* ============ estado ============ */
@@ -385,7 +427,7 @@
   var db = defaults();
   var sesion = { listo: false, user: null, perfil: null, org: null };
   var ultimaCarga = 0;
-  var ui = { q: "", cur: "USD", galIdx: 0, corralModo: "estado", moviendo: null, editandoTemp: null, filtros: { estado: "", ubicacion: "", sexo: "", incluirBajas: false } };
+  var ui = { q: "", cur: "USD", galIdx: 0, corralModo: "estado", moviendo: null, editandoTemp: null, calMes: new Date().toISOString().slice(0, 7), calFiltro: "", filtros: { estado: "", ubicacion: "", sexo: "", incluirBajas: false } };
 
   function defaults() {
     var fx = 1000;
@@ -503,7 +545,7 @@
     else if (dc !== null && dc > 150) out.push({ n: "warn", t: "Coggins por vencer" });
 
     var dh = diasDesde(h.herrajeFecha);
-    if (dh !== null && dh > 45 && h.estado !== "vientre" && h.estado !== "retirada") out.push({ n: "warn", t: "Herraje atrasado (" + dh + " días)" });
+    if (dh !== null && dh > 45 && ["cria_donante", "cria_natural", "retirada"].indexOf(h.estado) === -1) out.push({ n: "warn", t: "Herraje atrasado (" + dh + " días)" });
 
     if (h.estado === "recuperacion") out.push({ n: "crit", t: "En recuperación" + (h.altaEstimada ? " — alta estimada " + fmtFecha(h.altaEstimada) : "") });
     if (h.reproductivo === "prenada" && h.fechaParto) {
@@ -567,14 +609,14 @@
     fr.onload = function () {
       var img = new Image();
       img.onload = function () {
-        var max = 620;
+        var max = 1280;
         var w = img.width, hh = img.height;
         if (w > hh && w > max) { hh = Math.round(hh * max / w); w = max; }
         else if (hh >= w && hh > max) { w = Math.round(w * max / hh); hh = max; }
         var c = document.createElement("canvas");
         c.width = w; c.height = hh;
         c.getContext("2d").drawImage(img, 0, 0, w, hh);
-        cb(c.toDataURL("image/jpeg", 0.72));
+        cb(c.toDataURL("image/jpeg", 0.8));
       };
       img.onerror = function () { toast("No se pudo leer esa imagen."); };
       img.src = fr.result;
@@ -585,9 +627,11 @@
   /* ============ capa de datos (Supabase) ============ */
 
   function errorDatos(e, contexto) {
-    var msg = (e && (e.message || e.error_description)) || "revisá la conexión";
+    var msg = (e && (e.message || e.error_description || e.error)) || "revisá la conexión";
     if (e && e.code === "23505") msg = "ya existe un caballo con ese nombre en el criadero";
+    if (e && e.statusCode) msg += " (código " + e.statusCode + ")";
     toast((contexto || "No se pudo guardar") + ": " + msg + ".");
+    try { console.error(contexto, e); } catch (_) {}
   }
 
   var RUBRO_APP_A_DB = { "Pensión / campo": "Pensión/campo" };
@@ -652,7 +696,8 @@
       sb.from("fotos").select("*").order("orden"),
       sb.from("videos").select("*").order("fecha"),
       sb.from("fichas_publicas").select("*"),
-      sb.from("perfiles").select("*")
+      sb.from("perfiles").select("*"),
+      sb.from("actividades").select("caballo_id, fecha, tipo")
     ]).then(function (rs) {
       var conError = rs.filter(function (r) { return r.error; })[0];
       if (conError) throw conError.error;
@@ -676,6 +721,11 @@
       db.fichasPublicas = {};
       (rs[9].data || []).forEach(function (f) { db.fichasPublicas[f.caballo_id] = f; });
       db.equipo = rs[10].data || [];
+      db.actividades = {};
+      (rs[11].data || []).forEach(function (a) {
+        if (!db.actividades[a.caballo_id]) db.actividades[a.caballo_id] = {};
+        db.actividades[a.caballo_id][a.fecha] = a.tipo;
+      });
       ultimaCarga = Date.now();
       var fotosRows = (rs[7].data || []).filter(function (f) { return porId[f.caballo_id]; });
       if (!fotosRows.length) return;
@@ -713,9 +763,13 @@
     (h.fotosMeta || []).forEach(function (m, i) {
       if (m) tareas.push(sb.from("fotos").update({ orden: i }).eq("id", m.id));
     });
+    var nuevasFotos = 0;
     (h.fotos || []).forEach(function (src, i) {
       if (h.fotosMeta[i]) return;
+      nuevasFotos++;
+      var nroFoto = nuevasFotos;
       subidas.push(function () {
+        toast("Subiendo foto " + nroFoto + "…");
         return fetch(src).then(function (r) { return r.blob(); }).then(function (blob) {
           var path = oid + "/" + h.id + "/" + uid() + ".jpg";
           return sb.storage.from("fotos").upload(path, blob, { contentType: "image/jpeg" }).then(function (r) {
@@ -737,6 +791,7 @@
     (h.videos || []).forEach(function (v) {
       if (!v.blob) return;
       subidas.push(function () {
+        toast("Subiendo video" + (v.nombre ? " “" + v.nombre + "”" : "") + " (" + (v.mb || "?") + " MB)… no cierres la página.");
         var ext = ((v.blob.type || "video/mp4").split("/")[1] || "mp4").split(";")[0];
         var path = oid + "/" + h.id + "/" + uid() + "." + ext;
         return sb.storage.from("videos").upload(path, v.blob, { contentType: v.blob.type || "video/mp4" }).then(function (r) {
@@ -828,6 +883,44 @@
     return Promise.all(tareas).then(function () {
       return sb.from("caballos").delete().eq("id", h.id).then(function (r) { if (r.error) throw r.error; });
     });
+  }
+
+  function repoActividad(caballoId, fecha, tipo) {
+    if (!tipo) {
+      return sb.from("actividades").delete().eq("caballo_id", caballoId).eq("fecha", fecha)
+        .then(function (r) { if (r.error) throw r.error; });
+    }
+    return sb.from("actividades").upsert(
+      { organizacion_id: sesion.perfil.organizacion_id, caballo_id: caballoId, fecha: fecha, tipo: tipo },
+      { onConflict: "caballo_id,fecha" }
+    ).then(function (r) { if (r.error) throw r.error; });
+  }
+
+  function diasDelMes(ym) {
+    var partes = ym.split("-");
+    var anio = Number(partes[0]), mes = Number(partes[1]);
+    var total = new Date(anio, mes, 0).getDate();
+    var out = [];
+    for (var d = 1; d <= total; d++) {
+      var f = ym + "-" + String(d).padStart(2, "0");
+      out.push({ fecha: f, dia: d, dow: new Date(anio, mes - 1, d).getDay() });
+    }
+    return out;
+  }
+
+  function mesCorrido(ym, delta) {
+    var partes = ym.split("-");
+    var d = new Date(Number(partes[0]), Number(partes[1]) - 1 + delta, 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+  }
+
+  function tituloMes(ym) {
+    var partes = ym.split("-");
+    return MESES[Number(partes[1]) - 1] + " " + partes[0];
+  }
+
+  function actividadDe(caballoId, fecha) {
+    return (db.actividades && db.actividades[caballoId] && db.actividades[caballoId][fecha]) || "";
   }
 
   function linkFicha(slug) {
@@ -948,11 +1041,13 @@
       '<div class="tiles">' +
         tile("Competición", porEstado.competicion || 0, "Juegan torneos esta temporada") +
         tile("En juego", porEstado.juego || 0, "Trabajando y disponibles") +
-        tile("Preparación", porEstado.preparacion || 0, "Potros, doma y primer año") +
+        tile("Hechura y doma", (porEstado.hechura || 0) + (porEstado.doma || 0), "Haciéndose y primeros trabajos") +
         tile("Recuperación", porEstado.recuperacion || 0, "En reposo o tratamiento", "alert") +
         tile("Preñadas", prenadas.length, "De " + act.filter(function (h) { return HEMBRAS.indexOf(h.sexo) > -1; }).length + " hembras") +
         tile("Requieren atención", conAlerta.length, "Vencimientos y lesiones", conAlerta.length ? "alert" : "") +
       "</div>";
+
+    html += vCalendario();
 
     html += '<div class="grid2">' +
       '<div class="card pad stack cost"><p class="eyebrow">Valor del conjunto</p>' +
@@ -980,6 +1075,53 @@
 
     html += "</section>";
     return html;
+  }
+
+  function vCalendario() {
+    var dias = diasDelMes(ui.calMes);
+    var hoyF = hoy();
+    var lista = db.horses
+      .filter(function (h) { return h.estado !== "baja" && (!ui.calFiltro || h.estado === ui.calFiltro); })
+      .sort(function (a, b) { return norm(a.nombre).localeCompare(norm(b.nombre)); });
+
+    var cabecera = dias.map(function (d) {
+      return '<th class="cal-dia' + (d.dow === 0 || d.dow === 6 ? " finde" : "") + (d.fecha === hoyF ? " hoy" : "") + '">' +
+        '<span class="cal-dow">' + DIAS_SEMANA[d.dow] + "</span><br>" + d.dia + "</th>";
+    }).join("");
+
+    var filas = lista.map(function (h) {
+      var celdas = dias.map(function (d) {
+        var tipo = actividadDe(h.id, d.fecha);
+        var def = null;
+        TIPOS_ACT.forEach(function (x) { if (x.id === tipo) def = x; });
+        return '<td class="act-celda' + (tipo ? " act-" + tipo : "") + (d.dow === 0 || d.dow === 6 ? " finde" : "") + (d.fecha === hoyF ? " hoy" : "") + '"' +
+          ' data-act-cab="' + h.id + '" data-act-fecha="' + d.fecha + '"' +
+          ' role="button" tabindex="0" aria-label="' + esc(h.nombre + " " + fmtFecha(d.fecha) + ": " + (def ? def.label : "reposo")) + '">' +
+          (def ? def.letra : "") + "</td>";
+      }).join("");
+      return '<tr><td class="cal-nombre"><a href="#/caballo/' + h.id + '" style="text-decoration:none;color:inherit">' + esc(h.nombre) + "</a></td>" + celdas + "</tr>";
+    }).join("");
+
+    return '<div class="card"><div class="pad" style="padding-bottom:.6rem"><div class="row">' +
+      '<p class="eyebrow grow">Calendario de trabajo</p>' +
+      '<button class="btn sm" id="cal-prev" aria-label="Mes anterior">‹</button>' +
+      '<strong style="min-width:9.5rem;text-align:center">' + esc(tituloMes(ui.calMes)) + "</strong>" +
+      '<button class="btn sm" id="cal-next" aria-label="Mes siguiente">›</button>' +
+      '<select id="cal-filtro" aria-label="Filtrar caballos">' +
+        '<option value="">Todos (' + lista.length + ")</option>" +
+        ESTADOS.filter(function (e) { return e.id !== "baja"; }).map(function (e) {
+          var n = db.horses.filter(function (h) { return h.estado === e.id; }).length;
+          return '<option value="' + e.id + '"' + (ui.calFiltro === e.id ? " selected" : "") + ">" + esc(e.label) + " (" + n + ")</option>";
+        }).join("") +
+      "</select></div>" +
+      '<div class="row" style="gap:.3rem .8rem;margin-top:.4rem"><span class="note">Tocá un casillero para marcar:</span>' +
+        TIPOS_ACT.map(function (x) {
+          return '<span class="pill" style="background:color-mix(in srgb, var(' + x.cssVar + ') 18%, transparent);color:var(' + x.cssVar + ')">' + x.letra + " " + x.label + "</span>";
+        }).join("") +
+        '<span class="pill flat">vacío = Reposo</span>' +
+      "</div></div>" +
+      '<div class="scroller cal-scroll"><table class="cal-tabla"><thead><tr><th class="cal-nombre">Caballo</th>' + cabecera + "</tr></thead>" +
+      "<tbody>" + (filas || '<tr><td class="cal-nombre">Sin caballos en este filtro</td></tr>') + "</tbody></table></div></div>";
   }
 
   function tile(k, v, s, cls) {
@@ -1641,6 +1783,31 @@
         (h.reproductivo === "prenada" ? '<p class="note">Preñada — parto estimado ' + fmtFecha(h.fechaParto) + (h.receptora ? " · receptora: " + esc(h.receptora) : "") + "</p>" : "") +
       "</div></div>";
 
+    /* actividad del mes */
+    var actsMes = db.actividades && db.actividades[h.id] ? db.actividades[h.id] : {};
+    var diasFicha = diasDelMes(ui.calMes);
+    var conteo = { practica: 0, vareo: 0, partido: 0 };
+    diasFicha.forEach(function (d) { var tp = actsMes[d.fecha]; if (conteo[tp] != null) conteo[tp]++; });
+    var trabajados = conteo.practica + conteo.vareo + conteo.partido;
+    var reposo = diasFicha.length - trabajados;
+    html += '<div class="card pad stack"><div class="row"><p class="eyebrow grow">Actividad — ' + esc(tituloMes(ui.calMes)) + "</p>" +
+      '<button class="btn sm no-print" id="cal-prev" aria-label="Mes anterior">‹</button>' +
+      '<button class="btn sm no-print" id="cal-next" aria-label="Mes siguiente">›</button></div>' +
+      '<div class="tira-mes">' + diasFicha.map(function (d) {
+        var tp = actsMes[d.fecha];
+        var def = null;
+        TIPOS_ACT.forEach(function (x) { if (x.id === tp) def = x; });
+        return '<span class="tira-dia' + (tp ? " act-" + tp : "") + '" title="' + esc(fmtFecha(d.fecha) + ": " + (def ? def.label : "Reposo")) + '"></span>';
+      }).join("") + "</div>" +
+      '<div class="apt">' +
+        TIPOS_ACT.map(function (x) {
+          return '<div class="r"><span class="lb">' + esc(x.label + "s") + '</span><span class="bar"><span style="width:' +
+            Math.round(conteo[x.id] / diasFicha.length * 100) + "%;background:var(" + x.cssVar + ')"></span></span><span class="n">' + conteo[x.id] + "</span></div>";
+        }).join("") +
+        '<div class="r"><span class="lb">Reposo</span><span class="bar"><span style="width:' + Math.round(reposo / diasFicha.length * 100) + '%;background:var(--faint)"></span></span><span class="n">' + reposo + "</span></div>" +
+      "</div>" +
+      '<p class="note">' + trabajados + (trabajados === 1 ? " día trabajado" : " días trabajados") + " de " + diasFicha.length + ". Se marca desde el calendario del Tablero.</p></div>";
+
     /* movimientos */
     var mvs = (h.movimientos || []).slice().sort(function (a, b) { return String(b.fecha || "").localeCompare(String(a.fecha || "")); });
     html += '<div class="card pad stack"><div class="row"><p class="eyebrow grow">Historial de movimientos</p>' +
@@ -1755,10 +1922,10 @@
       "</div>" +
       '<div class="field"><label>Fotos</label><div class="photos" id="photos"></div>' +
       '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar fotos<input type="file" id="foto-in" accept="image/*" multiple hidden></label>' +
-      '<p class="note">Se achican solas a 620 px para no llenar el espacio. Recomendado: hasta 4 por caballo.</p></div>' +
+      '<p class="note">Se suben al servidor y se ven desde cualquier dispositivo.</p></div>' +
       '<div class="field"><label>Videos</label><div class="rowset" id="vlist"></div>' +
       '<label class="btn sm" style="cursor:pointer;align-self:flex-start;margin-top:.4rem">+ Agregar video<input type="file" id="video-in" accept="video/*" hidden></label>' +
-      '<p class="note">Se pueden filmar directo con el celular. Quedan guardados solo en este dispositivo y no entran en el respaldo exportado. Máximo 100 MB por video.</p></div>' +
+      '<p class="note">Se pueden filmar directo con el celular. Se suben al servidor al guardar y se ven desde cualquier dispositivo. Máximo 300 MB por video.</p></div>' +
       inp("video", "Link a video de juego (YouTube u otro)", n.video, "url") +
       "</fieldset>";
 
@@ -2111,6 +2278,31 @@
     if (t.dataset && t.dataset.cur) { ui.cur = t.dataset.cur; render(); return; }
     if (t.dataset && t.dataset.modo) { ui.corralModo = t.dataset.modo; render(); return; }
 
+    /* --- calendario --- */
+    if (t.id === "cal-prev" || t.id === "cal-next") {
+      ui.calMes = mesCorrido(ui.calMes, t.id === "cal-next" ? 1 : -1);
+      render();
+      return;
+    }
+    var celdaAct = t.closest && t.closest("[data-act-cab]");
+    if (celdaAct) {
+      var cabAct = celdaAct.dataset.actCab, fechaAct = celdaAct.dataset.actFecha;
+      var orden = ["", "practica", "vareo", "partido"];
+      var actual = actividadDe(cabAct, fechaAct);
+      var proximo = orden[(orden.indexOf(actual) + 1) % orden.length];
+      if (!db.actividades) db.actividades = {};
+      if (!db.actividades[cabAct]) db.actividades[cabAct] = {};
+      if (proximo) db.actividades[cabAct][fechaAct] = proximo;
+      else delete db.actividades[cabAct][fechaAct];
+      var defAct = null;
+      TIPOS_ACT.forEach(function (x) { if (x.id === proximo) defAct = x; });
+      celdaAct.className = celdaAct.className.replace(/\bact-(practica|vareo|partido)\b/g, "").trim();
+      if (proximo) celdaAct.className += " act-" + proximo;
+      celdaAct.textContent = defAct ? defAct.letra : "";
+      repoActividad(cabAct, fechaAct, proximo || null).catch(function (e) { errorDatos(e, "No se pudo marcar la actividad"); });
+      return;
+    }
+
     /* --- movimientos --- */
     if (t.id === "mover") { ui.moviendo = ruta().id; render(); return; }
     if (t.id === "mv-cancel") { ui.moviendo = null; render(); return; }
@@ -2220,6 +2412,7 @@
 
   document.addEventListener("change", function (ev) {
     var t = ev.target;
+    if (t.id === "cal-filtro") { ui.calFiltro = t.value; render(); return; }
     if (t.id === "f-estado") { ui.filtros.estado = t.value; render(); return; }
     if (t.id === "f-ubic") { ui.filtros.ubicacion = t.value; render(); return; }
     if (t.id === "f-sexo") { ui.filtros.sexo = t.value; render(); return; }
@@ -2257,7 +2450,7 @@
       var vf = t.files && t.files[0];
       t.value = "";
       if (!vf) return;
-      if (vf.size > 100 * 1024 * 1024) { toast("Ese video pesa más de 100 MB. Filmá uno más corto o recortalo."); return; }
+      if (vf.size > 300 * 1024 * 1024) { toast("Ese video pesa " + Math.round(vf.size / 1048576) + " MB y el máximo es 300. Filmalo más corto o bajale la calidad en el celular."); return; }
       var vmb = Math.max(1, Math.round(vf.size / 1048576));
       draft.videos.push({ blob: vf, nombre: vf.name.replace(/\.[^.]+$/, ""), mb: vmb });
       pintarVideos();
