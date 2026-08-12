@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Configuración local de Claude Code (no se comparte)
+.claude/settings.local.json
+
+# Respaldos exportados desde la app (pueden tener datos reales del establo)
+el-corral-respaldo-*.json
+*.backup.json
+
+# Dependencias y builds, para más adelante
+node_modules/
+dist/
+.env
+.env.local
