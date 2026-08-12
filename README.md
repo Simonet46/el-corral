@@ -72,15 +72,9 @@ Esto es un borrador para que lo rompas. **Todo se puede cambiar**: los nombres d
 
 Si algo no se entiende, si falta un dato que vos usás todos los días, o si hay algo que directamente no sirve — anotalo. Lo mejor que podés hacer es contar **cómo lo hacés hoy** y **qué te gustaría que hiciera la app**, aunque parezca una pavada.
 
-### Cómo dejar una idea, en 3 pasos
+**Mandá las ideas por WhatsApp, como te salga**: un audio mientras recorrés la app, una lista, una captura de pantalla marcada con el dedo. Todo sirve. Mejor muchos mensajes cortos que uno largo.
 
-1. Entrá a **https://github.com/Simonet46/el-corral/issues** y apretá el botón verde **New issue**.
-2. En **Title** escribí en pocas palabras de qué se trata. Por ejemplo: *"Falta anotar el peso del caballo"*.
-3. En el recuadro grande de abajo contá el detalle con tus palabras, y apretá **Create**.
-
-No hace falta saber nada técnico, ni escribir bien, ni usar ningún formato. Es como mandar un mensaje. Podés dejar tantos como quieras — mejor muchos cortos que uno largo.
-
-Si te resulta más cómodo, mandámelos por WhatsApp y los cargo yo.
+Cada idea que llegue queda anotada en la [lista de pendientes](https://github.com/Simonet46/el-corral/issues), así ninguna se pierde y podés ver en qué anda cada una.
 
 ---
 
