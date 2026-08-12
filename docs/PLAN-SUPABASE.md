@@ -1,6 +1,12 @@
 # Plan de migración a Supabase — branch `supabase-mvp`
 
-Estado: **propuesto, esperando aprobación**. Nada de esto está aplicado.
+Estado: **base de datos aplicada** (12/8/2026) en el proyecto `corral` (`bnhrszhtbnlizqgiijxn`, eu-central-1).
+
+- API URL: `https://bnhrszhtbnlizqgiijxn.supabase.co`
+- Clave publicable (va en el frontend, no es secreta): `sb_publishable_gZQOaVxheA8Z2cprGwdYSA_MPzV8Z8Q`
+- Migraciones aplicadas: `esquema_inicial`, `ficha_publica_y_storage`, `onboarding_y_equipo`, `cerrar_permisos_anon` (+ `revocar_public_en_helpers`, incluida en el archivo 0004).
+- Chequeo de seguridad de Supabase: sin pendientes — lo único ejecutable por el público es `ficha_publica`/`ficha_publica_visita`, que es el diseño.
+- Falta: script de importación probado con datos reales, frontend con login (paso 4) y deploy (paso 5).
 
 ## Qué cambia para el usuario
 
@@ -28,7 +34,7 @@ Está completo en [`supabase/migrations/`](../supabase/migrations/):
 
 ## Migración de datos
 
-`scripts/importar-respaldo.mjs` (a escribir en el paso 3): toma el JSON de **Exportar respaldo** de la app actual y lo sube — crea la organización, inserta los caballos resolviendo madre/padre por nombre a `madre_id`/`padre_id`, y sube las fotos base64 al bucket. **Limitación:** los videos guardados en el prototipo (IndexedDB) no viajan en el respaldo; se recargan a mano.
+`scripts/importar-respaldo.mjs` (escrito, falta probarlo con un respaldo real): toma el JSON de **Exportar respaldo** de la app actual y lo sube — crea la organización, inserta los caballos resolviendo madre/padre por nombre a `madre_id`/`padre_id`, y sube las fotos base64 al bucket. **Limitación:** los videos guardados en el prototipo (IndexedDB) no viajan en el respaldo; se recargan a mano.
 
 ## Frontend
 

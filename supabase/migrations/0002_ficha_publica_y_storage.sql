@@ -19,9 +19,6 @@ begin
     return null;
   end if;
 
-  -- contador de visitas (mejor esfuerzo; no bloquea la lectura)
-  update fichas_publicas set vistas = vistas + 1 where id = v_ficha.id;
-
   select jsonb_build_object(
     'nombre', c.nombre,
     'apodo', c.apodo,
@@ -57,6 +54,14 @@ $$;
 -- anon puede ejecutar solo esta función
 revoke all on function ficha_publica(text) from public;
 grant execute on function ficha_publica(text) to anon, authenticated;
+
+-- Contador de visitas separado: la función de lectura es stable y no puede escribir.
+create or replace function ficha_publica_visita(p_slug text) returns void
+language sql volatile security definer set search_path = public as
+$$ update fichas_publicas set vistas = vistas + 1 where slug = p_slug and activa $$;
+
+revoke all on function ficha_publica_visita(text) from public;
+grant execute on function ficha_publica_visita(text) to anon, authenticated;
 
 -- ---------- Storage ----------
 -- Buckets privados. Convención de ruta: organizacion_id/caballo_id/archivo
